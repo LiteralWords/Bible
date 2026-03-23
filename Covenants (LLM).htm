@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Covenants in the Bible</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --parchment: #f5efe0;
+    --parchment-dark: #e8dcc8;
+    --ink: #2c1e0f;
+    --ink-light: #4a3520;
+    --gold: #9a7a3a;
+    --gold-light: #c4a45e;
+    --gold-faint: #f0e4c0;
+    --scripture-blue: #1a3a5c;
+    --scripture-bg: #eef3f8;
+    --strongs-green: #1a4a2e;
+    --strongs-bg: #eef4ee;
+    --border: #c4a45e;
+    --shadow: rgba(44, 30, 15, 0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--parchment);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 17px;
+    line-height: 1.8;
+    background-image: 
+      radial-gradient(ellipse at 20% 50%, rgba(154, 122, 58, 0.04) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(154, 122, 58, 0.06) 0%, transparent 60%);
+  }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    background: linear-gradient(160deg, #1a0e05 0%, #2c1e0f 60%, #3d2a14 100%);
+    color: var(--gold-light);
+    text-align: center;
+    padding: 60px 30px 50px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+      repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(154,122,58,0.04) 40px, rgba(154,122,58,0.04) 41px),
+      repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(154,122,58,0.04) 40px, rgba(154,122,58,0.04) 41px);
+  }
+
+  .page-header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 2.8rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--gold-light);
+    position: relative;
+    text-shadow: 0 2px 20px rgba(196,164,94,0.3);
+  }
+
+  .header-rule {
+    width: 180px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 18px auto 14px;
+  }
+
+  .header-subtitle {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: rgba(196,164,94,0.7);
+    letter-spacing: 0.08em;
+    position: relative;
+  }
+
+  /* ── NAV BAR ── */
+  .site-nav {
+    background: var(--ink);
+    padding: 10px 30px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+    border-bottom: 2px solid var(--gold);
+  }
+
+  .site-nav a {
+    color: var(--gold-light);
+    text-decoration: none;
+    font-family: 'Cinzel', serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    padding: 5px 14px;
+    border: 1px solid rgba(196,164,94,0.3);
+    transition: all 0.2s ease;
+  }
+
+  .site-nav a:hover {
+    background: rgba(196,164,94,0.15);
+    border-color: var(--gold-light);
+    color: #fff;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .content-wrapper {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 50px 30px 80px;
+  }
+
+  /* ── SECTION HEADINGS ── */
+  h3.section-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.18em;
+    color: var(--gold);
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    margin: 50px 0 22px;
+  }
+
+  /* ── DEFINITIONS ── */
+  .strongs {
+    background: var(--strongs-bg);
+    border-left: 3px solid var(--strongs-green);
+    padding: 14px 20px;
+    margin: 14px 0;
+    color: var(--strongs-green);
+    font-size: 0.95rem;
+    line-height: 1.7;
+    font-style: italic;
+  }
+
+  /* ── BODY TEXT ── */
+  .body-text {
+    margin: 16px 0;
+    font-size: 1.05rem;
+    color: var(--ink-light);
+    line-height: 1.85;
+  }
+
+  /* ── SCRIPTURE QUOTES ── */
+  .scripture {
+    background: var(--scripture-bg);
+    border-left: 3px solid var(--scripture-blue);
+    margin: 16px 0 16px 30px;
+    padding: 14px 20px;
+    color: var(--scripture-blue);
+    font-size: 1rem;
+    line-height: 1.8;
+  }
+
+  .scripture a {
+    font-family: 'Cinzel', serif;
+    font-size: 0.78rem;
+    color: var(--gold);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    display: inline-block;
+    margin-top: 6px;
+    font-style: normal;
+  }
+
+  .scripture a:hover { color: var(--ink); text-decoration: underline; }
+
+  /* ── TOC ── */
+  .toc-box {
+    background: linear-gradient(135deg, var(--parchment-dark), var(--parchment));
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 30px 36px;
+    margin: 30px 0 50px;
+    box-shadow: 0 4px 24px var(--shadow);
+  }
+
+  .toc-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .toc-list {
+    columns: 2;
+    column-gap: 40px;
+    list-style: none;
+  }
+
+  @media (max-width: 600px) { .toc-list { columns: 1; } }
+
+  .toc-list li { margin: 5px 0; break-inside: avoid; }
+
+  .toc-list a {
+    color: var(--ink-light);
+    text-decoration: none;
+    font-size: 0.98rem;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .toc-list a::before {
+    content: '›';
+    color: var(--gold);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .toc-list a:hover { color: var(--gold); }
+
+  .toc-list .sub-item a { padding-left: 22px; font-size: 0.92rem; color: #6b5535; }
+  .toc-list .sub-item a::before { color: var(--parchment-dark); }
+
+  /* ── COVENANT SECTION HEADERS ── */
+  .covenant-header {
+    margin: 70px 0 0;
+    padding-top: 40px;
+    border-top: 2px solid var(--border);
+    position: relative;
+  }
+
+  .covenant-header::before {
+    content: '✦';
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--parchment);
+    padding: 0 12px;
+    color: var(--gold);
+    font-size: 0.9rem;
+  }
+
+  .covenant-header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.8rem;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: 0.04em;
+    margin-bottom: 4px;
+  }
+
+  .covenant-header h2 {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--gold);
+    font-weight: 400;
+    margin-top: 6px;
+    letter-spacing: 0.03em;
+  }
+
+  .covenant-header h2 a { color: var(--gold); }
+
+  /* ── COVENANT TABLE ── */
+  .covenant-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0 16px;
+    box-shadow: 0 2px 16px var(--shadow);
+    border: 1px solid var(--border);
+  }
+
+  .covenant-table tr {
+    border-bottom: 1px solid var(--parchment-dark);
+  }
+
+  .covenant-table tr:last-child { border-bottom: none; }
+
+  .covenant-table tr:nth-child(even) td { background: rgba(232, 220, 200, 0.25); }
+
+  .label-cell {
+    width: 160px;
+    min-width: 120px;
+    padding: 16px 20px;
+    vertical-align: top;
+    background: linear-gradient(90deg, rgba(154,122,58,0.08), rgba(154,122,58,0.03));
+    border-right: 1px solid var(--border);
+  }
+
+  .label-cell p {
+    font-family: 'Cinzel', serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    color: var(--gold);
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .content-cell {
+    padding: 16px 24px;
+    vertical-align: top;
+  }
+
+  .content-cell .scripture {
+    margin-left: 0;
+  }
+
+  .content-cell .body-text { margin: 10px 0; }
+
+  /* ── BACK TO TOP ── */
+  .back-to-top {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 30px 0 10px;
+    color: var(--gold);
+    text-decoration: none;
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    padding: 6px 14px;
+    transition: all 0.2s;
+  }
+
+  .back-to-top:hover {
+    background: var(--gold-faint);
+    border-color: var(--gold);
+  }
+
+  /* ── OTHER COVENANT HEADERS ── */
+  .sub-covenant {
+    margin-top: 50px;
+  }
+
+  .sub-covenant h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: 0.04em;
+    border-left: 3px solid var(--gold);
+    padding-left: 14px;
+    margin-bottom: 16px;
+  }
+
+  /* ── INLINE LINKS ── */
+  a { color: var(--gold); }
+  a:hover { color: var(--ink); }
+
+  /* ── FOOTER SEPARATOR ── */
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 60px 0 0;
+  }
+</style>
+</head>
+<body>
+<a id="top"></a>
+
+<!-- PAGE HEADER -->
+<header class="page-header">
+  <h1>The Covenants in the Bible</h1>
+  <div class="header-rule"></div>
+  <p class="header-subtitle">A study of God's sacred agreements with mankind</p>
+</header>
+
+<!-- SITE NAVIGATION -->
+<nav class="site-nav">
+  <a href="litv.htm">Bible</a>
+  <a href="notes.htm">Notes</a>
+  <a href="creeds.htm">Creeds</a>
+  <a href="Baptist%20confession%20of%20faith.htm">Baptist Confession of Faith</a>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="content-wrapper">
+
+  <!-- WHAT IS A COVENANT -->
+  <a id="What"></a>
+  <h3 class="section-label">What is a Covenant?</h3>
+
+  <div class="strongs">
+    <strong>H3772</strong> כָּרַת <em>kârath</em>, kaw-rath' — a primitive root; to cut (off, down or asunder); by implication, to destroy or consume; specifically, to covenant (i.e. make an alliance or bargain, originally by cutting flesh and passing between the pieces): be chewed, be con-(feder-)ate, covenant, cut (down, off), destroy, fail, feller, be freed, hew (down), make a league (covenant), × lose, perish, × utterly, × want.
+  </div>
+  <div class="strongs">
+    <strong>G1242</strong> διαθήκη <em>diathḗkē</em>, dee-ath-ay'-kay — from G1303; properly, a disposition, i.e. (specially) a contract (especially a devisory will): covenant, testament.
+  </div>
+
+  <p class="body-text">Think of a covenant as the making of a sacred agreement of which both parties swear that they will not break.</p>
+  <p class="body-text">There are the promises that each party commits in the agreement. In this covenant I swear that I will xxx. These promises can also be called blessings.</p>
+
+  <div class="scripture">
+    Blessed be Jehovah who has given rest to His people Israel, according to all that He has spoken; not one word of all His good Word has fallen, which He spoke by the hand of His servant Moses.
+    <a href="11&nbsp;1ki.htm#8">1 Kings 8:56</a>
+  </div>
+
+  <p class="body-text">There also are promises that each party makes that they will do if the other party breaks the covenant. If you break the covenant then I will hunt you down and kill you, and if I don't kill you then my children will hunt down you and your children to kill you. These are also called curses.</p>
+  <p class="body-text">When the covenant is made it takes place in what is called a ceremony. In the ceremony there is a "thing" that confirms that each party swears that they will not break the covenant. It can be giving the other party something that is owned by you that is treasured. This "Xxx" is most important to me so I am giving it to you so you know that I am serious about making this covenant. These are called tokens of the covenant.</p>
+  <p class="body-text">Is making a promise a sign that a covenant has been made?</p>
+
+  <div class="scripture">
+    And Jehovah God said to the serpent, Because you have done this, you are cursed above all beasts, and above every animal of the field. You shall go on your belly, and you shall eat dust all the days of your life. And I will put enmity between you and the woman, and between your seed and her Seed; He will bruise your head, and you shall bruise His heel.
+    <a href="01&nbsp;gen.htm#3">Genesis 3:14-15</a>
+  </div>
+
+  <p class="body-text">Because God gave this promise to the Serpent does it mean that God has made a covenant with the Serpent?</p>
+  <p class="body-text"><em>Just because God promises something doesn't mean that He has made a covenant with them.</em></p>
+
+  <!-- TABLE OF CONTENTS -->
+  <a id="List"></a>
+  <div class="toc-box">
+    <div class="toc-title">The Covenants in the Bible</div>
+    <ul class="toc-list">
+      <li><a href="#Noahide">Noahide Covenant</a></li>
+      <li><a href="#Abrahamic">Abrahamic Covenant</a></li>
+      <li><a href="#Moslem">Moslem Covenant</a></li>
+      <li><a href="#Mosaic">Mosaic Covenant</a></li>
+      <li><a href="#Phinehas">Phinehas Covenant</a></li>
+      <li><a href="#Davidic">Davidic Covenant</a></li>
+      <li><a href="#NewCovenant">New Covenant</a></li>
+      <li><a href="#OtherCovenants">Other Covenants</a></li>
+      <li class="sub-item"><a href="#AbrahamandAbimelech">Abraham and Abimelech</a></li>
+      <li class="sub-item"><a href="#AbrahamandMamre">Abraham and Mamre</a></li>
+      <li class="sub-item"><a href="#ISaacAndSomeone">Isaac and Someone</a></li>
+      <li class="sub-item"><a href="#IsraelandHivites">Israel and the Hivites</a></li>
+      <li class="sub-item"><a href="#IsraelandInhabitants">Israel and the Inhabitants</a></li>
+      <li class="sub-item"><a href="#DavidAndJonathan">David and Jonathan</a></li>
+      <li class="sub-item"><a href="#DavidAndAbner">David and Abner</a></li>
+      <li class="sub-item"><a href="#DavidAndElders">David and the Elders</a></li>
+      <li class="sub-item"><a href="#JehovahAndKing">Jehovah and the King</a></li>
+      <li class="sub-item"><a href="#KingAndJehovah">Jehovah and Another King</a></li>
+      <li class="sub-item"><a href="#KingAndJehovah2">Jehovah and Another King</a></li>
+      <li class="sub-item"><a href="#JabeshAndNahash">Jabesh and Nahash</a></li>
+      <li class="sub-item"><a href="#JehoiadaAndRulers">Jehoiada and the Rulers</a></li>
+      <li class="sub-item"><a href="#UnsureAndAhab">Someone and Ahab</a></li>
+      <li class="sub-item"><a href="#SomeoneAndSomeone">Someone and Someone</a></li>
+      <li class="sub-item"><a href="#JehoiadaANdCaptains">Jehoiada and the Captains</a></li>
+      <li class="sub-item"><a href="#AssemblyAndKing">The Assembly and the King</a></li>
+      <li class="sub-item"><a href="#SomeoneAndSomeone2">Someone and Someone</a></li>
+      <li class="sub-item"><a href="#Others">Miscellaneous Covenants</a></li>
+    </ul>
+  </div>
+
+  <!-- ══════════════════════════════════ -->
+  <!-- NOAHIDE COVENANT -->
+  <!-- ══════════════════════════════════ -->
+  <a id="Noahide"></a>
+  <div class="covenant-header">
+    <h1>Noahide Covenant</h1>
+  </div>
+
+  <table class="covenant-table">
+    <tbody>
+      <tr>
+        <td class="label-cell"><p>Between</p></td>
+        <td class="content-cell">
+          <div class="scripture">And <u>I will establish My covenant with you</u> [Noah]. And you shall come into the ark, you and your sons and your wife and your sons' wives with you. <a href="01%20gen.htm#6">Genesis 6:18</a></div>
+          <div class="scripture">And God spoke to Noah, and to his sons with him, saying, Behold! <u>I, even I, am establishing My covenant with you, and with your seed after you, and with every living creature which is with you...</u> <a href="01%20gen.htm#9">Genesis 9:8-10</a></div>
+          <div class="scripture">And <u>I have established My covenant with you</u>, and all flesh shall not be cut off again by the waters of a flood; nor shall there ever again be a flood to destroy the earth. <a href="01%20gen.htm#9">Genesis 9:11</a></div>
+          <div class="scripture">And God said to Noah, This is the sign of the covenant which <u>I have established between Me and all flesh that is on the earth</u>. <a href="01%20gen.htm#9">Genesis 9:17</a></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="label-cell"><p>Blessing</p></td>
+        <td class="content-cell">
+          <div class="scripture">And God blessed Noah and his sons. And He said to them, Be fruitful and multiply, and fill the earth. And your fear and your dread shall be on all the animals of the earth... Every creeping thing which is alive shall be food for you. I have given you all things, even as the green plant. <a href="01%20gen.htm#9">Genesis 9:1-3</a></div>
+          <div class="scripture">And you, be fruitful and multiply. Swarm over the earth and multiply in it. <a href="01%20gen.htm#9">Genesis 9:7</a></div>
+          <div class="scripture">And I will remember My covenant which is between Me and you, and every living soul in all flesh. And the waters shall not again become a flood to destroy all flesh. <a href="01%20gen.htm#9">Genesis 9:15</a></div>
+          <div class="scripture">And Jehovah smelled the soothing fragrance, and Jehovah said in His heart, I will never again curse the ground for the sake of man... While the earth remains, seedtime and harvest, cold and heat, summer and winter, and day and night shall not cease. <a href="01%20gen.htm#9">Genesis 9:21-22</a></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="label-cell"><p>Sign / Token</p></td>
+        <td class="content-cell">
+          <div class="scripture">And God said, This is the sign of the covenant which I am about to make between Me and you, and every living soul which is with you, for everlasting generations: I have set My bow in the cloud, and it shall be a sign of a covenant between Me and the earth... And the bow shall be in the clouds, and I shall see it, to remember the everlasting covenant between God and every living soul, in all flesh on the earth. <a href="01%20gen.htm#9">Genesis 9:12-17</a></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="label-cell"><p>Duration</p></td>
+        <td class="content-cell">
+          <div class="scripture">And the bow shall be in the clouds, and I shall see it, to remember the everlasting covenant between God and every living soul, in all flesh on the earth. <a href="01%20gen.htm#9">Genesis 9:16-17</a></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="label-cell"><p>Command</p></td>
+        <td class="content-cell">
+          <div class="scripture">But you shall not eat flesh in its life, its blood. And surely the blood of your lives I will demand. At the hand of every animal I will demand it, and at the hand of man. I will demand the life of man at the hand of every man's brother. <a href="01%20gen.htm#9">Genesis 9:4-5</a></div>
+          <div class="scripture">And God blessed Noah and his sons. And He said to them, Be fruitful and multiply, and fill the earth. <a href="01%20gen.htm#9">Genesis 9:1</a></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="label-cell"><p>Cursing</p></td>
+        <td class="content-cell">
+          <div class="scripture">But you shall not eat flesh in its life, its blood. And surely the blood of your lives I will demand. At the hand of every animal I will demand it, and at the hand of man. I will demand the life of man at the hand of every man's brother. Whoever sheds man's blood, his blood shall be shed by man. For He made man in the image of God. <a href="01%20gen.htm#9">Genesis 9:4-6</a></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="label-cell"><p>Breaking</p></td>
+        <td class="content-cell"></td>
+      </tr>
+    </tbody>
+  </table>
+  <a href="#top" class="back-to-top">↑ Back to Top</a>
+
+  <!-- ══════════════════════════════════ -->
+  <!-- ABRAHAMIC COVENANT -->
+  <!-- ══════════════════════════════════ -->
+  <a id="Abrahamic"></a>
+  <div class="covenant-header">
+    <h1>Abrahamic Covenant</h1>
+  </div>
+
+  <table class="covenant-table">
+    <tbody>
+      <tr>
+        <td class="label-cell"><p>Between</p></td>
+        <td class="content-cell">
+          <div class="scripture">And Jehovah appeared to Abram and said, I will give this land to your seed. <a href="01%20gen.htm#12">Genesis 12:7-8</a></div>
+          <div class="scripture">And it happened, the sun had gone down, and it was dark. Behold! A smoking furnace and a torch of fire that passed between those pieces! On that day Jehovah made a covenant with Abram, saying, I have given this land to your seed, from the river of Egypt to the great river, the river Euphrates... <a href="01%20gen.htm#15">Genesis 15:17-21</a></div>
+          <div class="scripture">And when Abram was ninety-nine years old, Jehovah appeared to Abram and said to him, I am the Almighty God! Walk before me and be perfect; and I will make My covenant between Me and you, and will multiply you very much. <a href="01%20gen.htm#17">Genesis 17:1-2</a></div>
+          <div class="scripture">And I will establish My covenant between Me and you, and your seed after you in their generations, for an everlasting covenant, to be a God to you and to your seed after you. And I will give to you and to your seed after you the land of your sojourning, all the land of Canaan, for an everlasting possession and I will be their God. <a href="01%20gen.htm#17">Genesis 17:1-8</a></div>
+          <div class="scripture">And God said, Your wife Sarah truly shall bear you a son, and you shall call his name Isaac. And I have established My covenant with him for a perpetual covenant with his seed after him. <a href="01%20gen.htm#17">Genesis 17:19</a></div>
+          <div class="scripture">He is Jehovah our God, His judgments are in the earth. Remember His covenant forever, the Word he gave to a thousand generations, which he has made with Abraham, and his oath to Isaac. <a href="13%201chr.htm#16">1 Chronicles 16:14-16</a></div>
+          <div class="scripture">The covenant to Abraham was promised to his seed, and all through the books of the First Covenant this was shown. It is not until the New Covenant that the "seed" is shown to be Jesus and not Isaac.</div>
+          <div class="scripture">Even "as Abraham believed God, and it was counted to him for righteousness..." But the promises were spoken to Abraham and to his Seed (it does not say, And to seeds, as of many, but as of one, "And to your Seed," which is Christ). <a href="49%20eph.htm#3">Galatians 3:6-18</a></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="label-cell"><p>Blessing</p></td>
+        <td class="content-cell">
+          <div class="scripture">And I will make of you a great nation. And I will bless you and make your name great; and you will be a blessing. And I will bless those who bless you, and curse the one despising you. And in you all families of the earth shall be blessed. <a href="01%20gen.htm#12">Genesis 12:2-3</a></div>
+          <div class="scripture">And after Lot had separated from him, Jehovah said to Abram... For all the land which you see I will give to you, and to your seed always. And I will make your seed as the dust of the earth... <a href="01%20gen.htm#13">Genesis 13:14-17</a></div>
+          <div class="scripture">That blessing I will bless you, and multiplying I will multiply your seed as the stars of the heavens, and as the sand which is on the shore of the sea. And your Seed shall possess the gate of His enemies. And in your Seed shall all the nations of the earth be blessed because you have obeyed My voice. <a href="01%20gen.htm#22">Genesis 22:17-18</a></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="label-cell"><p>Sign / Token</p></td>
+        <td class="content-cell">
+          <div class="scripture">And you shall circumcise the flesh of your foreskin. And it shall be a token of the covenant between Me and you... And My covenant shall be in your flesh for a perpetual covenant. <a href="01%20gen.htm#17">Genesis 17:11-13</a></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="label-cell"><p>Duration</p></td>
+        <td class="content-cell">
+          <div class="scripture">And My covenant shall be in your flesh for a perpetual covenant. And an uncircumcised male who is not circumcised in the flesh of his foreskin, his soul shall be cut off from his people; he has broken My covenant. <a href="01%20gen.htm#17">Genesis 17:13-14</a></div>
+          <div class="scripture">He is Jehovah our God; His judgments are in all the earth; He has remembered His covenant forever; the Word He commanded to a thousand generations; which He cut with Abraham, and His oath to Isaac. <a href="19%20psa.htm#105">Psalms 105:6-9</a></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="label-cell"><p>Command</p></td>
+        <td class="content-cell">
+          <div class="scripture">And Jehovah had said to Abram, Go out from your land and from your kindred, and from your father's house, to the land which I will show you. <a href="01%20gen.htm#12">Genesis 12:1-3</a></div>
+          <div class="scripture">And when Abram was ninety-nine years old, Jehovah appeared to Abram and said to him, I am the Almighty God! Walk before me and be perfect. <a href="01%20gen.htm#17">Genesis 17:1-2</a></div>
+          <div class="scripture">And God said to Abraham, You shall keep My covenant, you and your seed after you in their generations. This is My covenant which you shall keep... Every male child among you shall be circumcised. <a href="01%20gen.htm#17">Genesis 17:9-14</a></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="label-cell"><p>Cursing</p></td>
+        <td class="content-cell">
+          <p class="body-text">It is interesting to note that the curse of the Abrahamic covenant is one that was disputed over for a long time. Of course it's very easy to see why because it says if you are not circumcised then you are not in Abraham's covenant.</p>
+          <div class="scripture">And an uncircumcised male who is not circumcised in the flesh of his foreskin, his soul shall be cut off from his people; he has broken My covenant. <a href="01%20gen.htm#17">Genesis 17:14</a></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="label-cell"><p>Breaking</p></td>
+        <td class="content-cell">
+          <div class="scripture">And an uncircumcised male who is not circumcised in the flesh of his foreskin, his soul shall be cut off from his people; he has broken My covenant. <a href="01%20gen.htm#17">Genesis 17:13-14</a></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="label-cell"><p>Mediator</p></td>
+        <td class="content-cell">
+          <p class="body-text">Melchizedec. This is one of the scriptures where Angels may be considered to be mediators of the covenant.</p>
+          <div class="scripture">And the Angel of Jehovah called to Abraham out of the heavens a second time. And He said, I have sworn by Myself, a statement of Jehovah, that because of this thing you have done, and have not withheld your son, your only son, that blessing I will bless you... And in your Seed shall all the nations of the earth be blessed because you have obeyed My voice. <a href="01%20gen.htm#22">Genesis 22:11-18</a></div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="scripture">…then I will remember My covenant with Jacob, and also My covenant with Isaac, and also My covenant with Abraham I will remember. And I will remember the land. <a href="03%20lev.htm#26">Leviticus 26:42</a></div>
+  <a href="#top" class="back-to-top">↑ Back to Top</a>
+
+  <!-- ══════════════════════════════════ -->
+  <!-- MOSLEM COVENANT -->
+  <!-- ══════════════════════════════════ -->
+  <a id="Moslem"></a>
+  <div class="covenant-header">
+    <h1>Moslem Covenant</h1>
+  </div>
+
+  <table class="covenant-table">
+    <tbody>
+      <tr>
+        <td class="label-cell"><p>Between</p></td>
+        <td class="content-cell">
+          <div class="scripture">And as to Ishmael, I have heard you. Behold, I have blessed him and will make him fruitful and will multiply him exceedingly. He shall father twelve chiefs, and I will make him a great nation. <a href="01%20gen.htm#17">Genesis 17:20</a></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="label-cell"><p>Blessing</p></td>
+        <td class="content-cell">
+          <div class="scripture">And the Angel of Jehovah found her by a well of water in the wilderness... And the Angel of Jehovah said to her, I will exceedingly multiply your seed, so that it shall not be numbered for multitude. And the Angel of Jehovah said to her, Behold! You are with child and shall bear a son; and you shall call his name Ishmael, because Jehovah has listened to your affliction. <a href="01%20gen.htm#16">Genesis 16:7-10</a></div>
+          <div class="scripture">And as to Ishmael, I have heard you. Behold, I have blessed him and will make him fruitful and will multiply him exceedingly. He shall father twelve chiefs, and I will make him a great nation. <a href="01%20gen.htm#17">Genesis 17:20</a></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="label-cell"><p>Sign / Token</p></td>
+        <td class="content-cell">
+          <p class="body-text">Although not a command today, most Moslems are circumcised today, generally at the age of 7.</p>
+          <div class="scripture">And his son Ishmael was a son of thirteen years when being circumcised in the flesh of his foreskin. <a href="01%20gen.htm#17">Genesis 17:25</a></div>
+        </td>
+      </tr>
+      <tr><td class="label-cell"><p>Duration</p></td><td class="content-cell"></td></tr>
+      <tr><td class="label-cell"><p>Command</p></td><td class="content-cell"></td></tr>
+      <tr><td class="label-cell"><p>Cursing</p></td><td class="content-cell"></td></tr>
+      <tr><td class="label-cell"><p>Breaking</p></td><td class="content-cell"></td></tr>
+    </tbody>
+  </table>
+
+  <div class="scripture">For it is written, Abraham had two sons, one out of the slave woman and one of the free woman. But, indeed, the one of the slave woman has been born according to the flesh, and the one out of the free woman through promise... But the Jerusalem from above is free, who is the mother of us all. <a href="48%20gal.htm#4">Galatians 4:22-27</a></div>
+  <a href="#top" class="back-to-top">↑ Back to Top</a>
+
+  <!-- ══════════════════════════════════ -->
+  <!-- MOSAIC COVENANT -->
+  <!-- ══════════════════════════════════ -->
+  <a id="Mosaic"></a>
+  <div class="covenant-header">
+    <h1>Mosaic Covenant</h1>
+    <h2>Sinaitic Covenant · Covenant of Peace <a href="23%20isa.htm#54">[Isaiah 54:10]</a></h2>
+  </div>
+
+  <table class="covenant-table">
+    <tbody>
+      <tr>
+        <td class="label-cell"><p>Between</p></td>
+        <td class="content-cell">
+          <div class="scripture">And Moses wrote all the Words of Jehovah... And Moses took the blood and sprinkled on the people, and said, Behold, the blood of the covenant which Jehovah has cut with you concerning these words. <a href="02%20exo.htm#24">Exodus 24:4-8</a></div>
+          <div class="scripture">And the LORD said unto Moses, Write thou these words: for after the tenor of these words I have made a covenant with thee and with Israel. <a href="02%20exo.htm#34">Exodus 34:27</a></div>
+          <div class="scripture">The LORD made not this covenant with our fathers, but with us, even us, who are all of us here alive this day. <a href="05%20deut.htm#5">Deuteronomy 5:3</a></div>
+          <div class="scripture">These are the words of the covenant, which the LORD commanded Moses to make with the children of Israel in the land of Moab, beside the covenant which he made with them in Horeb. <a href="05%20deut.htm#29">Deuteronomy 29:1</a></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="label-cell"><p>Blessing</p></td>
+        <td class="content-cell">
+          <p class="body-text">The hope of a new Spirit within man was given to the nation of Israel under the Mosaic covenant:</p>
+          <div class="scripture">And Jehovah your God will circumcise your heart, and the heart of your seed, to love Jehovah your God with all your heart, and with all your soul, that you may live. <a href="05%20deut.htm#30">Deuteronomy 30:6</a></div>
+          <div class="scripture">And I shall give to them one heart, and I will put a new spirit within you. And I will remove the stony heart out of their flesh, and I will give them a heart of flesh, so that they may walk in My statutes and keep My judgments, and do them. And they shall be to Me for a people, and I will be to them for God. <a href="26%20ezek.htm#11">Ezekiel 11:17-20</a></div>
+          <div class="scripture">And it shall be if listening you will listen to the voice of Jehovah your God, taking heed to do all His commandments... Jehovah your God shall give you to be on high above all nations of the earth. And all these blessings shall come on you and overtake you... <a href="05%20deut.htm#28">Deuteronomy 28:1-13</a></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="label-cell"><p>Sign / Token</p></td>
+        <td class="content-cell">
+          <div class="scripture">Wherefore the children of Israel shall keep the sabbath, to observe the sabbath throughout their generations, for a perpetual covenant. <a href="02%20exo.htm#31">Exodus 31:16</a></div>
+          <div class="scripture">Take this book of the Law, and you shall put it in the side of the ark of the covenant of Jehovah your God, so that it may be there for a witness against you. <a href="05%20deut.htm#31">Deuteronomy 31:26</a></div>
+          <p class="body-text">Heaven and earth witness.</p>
+        </td>
+      </tr>
+      <tr>
+        <td class="label-cell"><p>Duration</p></td>
+        <td class="content-cell">
+          <p class="body-text">Also called a covenant of peace in <a href="23%20isa.htm#54">Isaiah 54:10</a>.</p>
+          <div class="scripture">For the mountains shall depart and the hills be removed, but My kindness shall not depart from you; nor shall the covenant of My peace be removed, says Jehovah who has pity on you. <a href="23%20isa.htm#54">Isaiah 54:10</a></div>
+          <div class="scripture">Know therefore that the LORD thy God, he is God, the faithful God, which keepeth covenant and mercy with them that love him and keep his commandments to a thousand generations. <a href="05%20deut.htm#7">Deuteronomy 7:9</a></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="label-cell"><p>Command</p></td>
+        <td class="content-cell">
+          <p class="body-text">The <a href="613commandments.htm">613 commands</a>.</p>
+          <p class="body-text">Moses broke the command which was a specific command to him and him alone. And it was a verbal command not written among the 613 written Torah.</p>
+        </td>
+      </tr>
+      <tr>
+        <td class="label-cell"><p>Cursing</p></td>
+        <td class="content-cell">
+          <div class="scripture">And you shall not turn away from all the Words which I am commanding you today, right or left, to go after other gods, to serve them. And it shall be, if you will not heed the voice of your God... even all these curses shall come on you and overtake you: You shall be cursed in the city, and you shall be cursed in the field... <a href="05%20deut.htm#28">Deuteronomy 28:14-68</a></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="label-cell"><p>Breaking</p></td>
+        <td class="content-cell">
+          <div class="scripture">If these ordinances depart from before Me, a statement of Jehovah, the seed of Israel also shall cease from being a nation before Me forever. <a href="24%20jer.htm#31">Jeremiah 31:35-36</a></div>
+          <div class="scripture">They are turned back to the iniquities of their forefathers, which refused to hear my words; and they went after other gods to serve them: the house of Israel and the house of Judah have broken my covenant which I made with their fathers. <a href="24%20jer.htm#11">Jeremiah 11:10</a></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="label-cell"><p>Mediator</p></td>
+        <td class="content-cell"><p class="body-text">Priests</p></td>
+      </tr>
+    </tbody>
+  </table>
+  <a href="#top" class="back-to-top">↑ Back to Top</a>
+
+  <!-- ══════════════════════════════════ -->
+  <!-- PHINEHAS COVENANT -->
+  <!-- ══════════════════════════════════ -->
+  <a id="Phinehas"></a>
+  <div class="covenant-header">
+    <h1>Phinehas Covenant</h1>
+  </div>
+
+  <table class="covenant-table">
+    <tbody>
+      <tr>
+        <td class="label-cell"><p>Between</p></td>
+        <td class="content-cell">
+          <div class="scripture">And Jehovah spoke to Moses, saying: Phinehas the son of Eleazar, the son of Aaron the priest, has turned My wrath away from the sons of Israel while he was zealous for My sake among them... Therefore say, Behold, I give to him My covenant of peace. And it shall be to him, and to his seed after him, the covenant of an everlasting priesthood, because he was zealous for his God, and atoned for the sons of Israel. <a href="04%20num.htm#25">Numbers 25:11-13</a></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="label-cell"><p>Blessing</p></td>
+        <td class="content-cell">
+          <div class="scripture">And Jehovah spoke to Moses, saying: Phinehas the son of Eleazar, the son of Aaron the priest, has turned My wrath away from the sons of Israel while he was zealous for My sake among them... Behold, I give to him My covenant of peace. And it shall be to him, and to his seed after him, the covenant of an everlasting priesthood. <a href="04%20num.htm#25">Numbers 25:11-13</a></div>
+        </td>
+      </tr>
+      <tr><td class="label-cell"><p>Sign / Token</p></td><td class="content-cell"></td></tr>
+      <tr>
+        <td class="label-cell"><p>Duration</p></td>
+        <td class="content-cell">
+          <div class="scripture">...the covenant of an everlasting priesthood, because he was zealous for his God, and atoned for the sons of Israel. <a href="04%20num.htm#25">Numbers 25:11-13</a></div>
+        </td>
+      </tr>
+      <tr><td class="label-cell"><p>Command</p></td><td class="content-cell"></td></tr>
+      <tr><td class="label-cell"><p>Cursing</p></td><td class="content-cell"></td></tr>
+      <tr>
+        <td class="label-cell"><p>Breaking</p></td>
+        <td class="content-cell">
+          <div class="scripture">And now, O priests, this command is to you. If you will not hear, and if you will not set it on your heart to give glory to My name, says Jehovah of Hosts, then I will send the curse on you... You have corrupted the covenant of Levi, says Jehovah of Hosts. <a href="39%20mal.htm#2">Malachi 2:1-9</a></div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="body-text">Phineas, the son of Eleazar, the son of Aaron took a spear and killed an Israelite man and a Moabite woman in the act of ritual prostitution inside the Tent of Meeting itself <a href="04%20num.htm#25">Numbers 25:6-8</a>. Such was his zeal that the Lord made a covenant of peace with him that he and his descendants would enjoy an everlasting priesthood <a href="04%20num.htm#25">Numbers 25:10-13</a>. The line of Phineas served as high priest down until the time of Eli and his sons (of the line of Ithamar according to <a href="13%201chr.htm#24">1 Chronicles 24:3</a>) described in 1 Sam. 1-3. When the Tabernacle and priesthood was restored by David it was Zadok, a descendent of Phineas who served as high priest and so on down to the time of Ezra <a href="15%20ezra.htm#7">Ezra 7:1-5</a>. The succession ended in 171 BC when Antiochus IV transferred the priesthood from Jason to Menelaus.</p>
+  <p class="body-text">Ezra was a descendant of Phinehas:</p>
+  <div class="scripture">And after these things, in the reign of Artaxerxes the king of Persia, Ezra the son of Seraiah... the son of Abishua, the son of Phinehas, the son of Eleazar, the son of Aaron the head priest. <a href="15%20ezra.htm#7">Ezra 7:1-5</a></div>
+  <a href="#top" class="back-to-top">↑ Back to Top</a>
+
+  <!-- ══════════════════════════════════ -->
+  <!-- DAVIDIC COVENANT -->
+  <!-- ══════════════════════════════════ -->
+  <a id="Davidic"></a>
+  <div class="covenant-header">
+    <h1>Davidic Covenant</h1>
+    <h2>Also called a covenant of peace — <a href="26%20ezek.htm#34">Ezekiel 34:25</a></h2>
+  </div>
+
+  <table class="covenant-table">
+    <tbody>
+      <tr>
+        <td class="label-cell"><p>Between</p></td>
+        <td class="content-cell">
+          <div class="scripture">But now your [Saul's] kingdom shall not stand. Jehovah has sought out for Himself a man according to His own heart, and Jehovah has appointed him [David] as leader over His people. <a href="09%201sam.htm#13">1 Samuel 13:14</a></div>
+          <div class="scripture">When your days are fulfilled, and you lie with your fathers, then I shall raise up your seed after you... He shall build a house for My Name, and I shall establish the throne of his kingdom forever. I shall be a father to him, and he shall be a son to Me... And your house shall be established, and your kingdom before you forever. Your throne shall be established forever. <a href="10%202sam.htm#7">2 Samuel 7:12-17</a></div>
+          <div class="scripture">I have cut a covenant with My elect; I have sworn to David My servant, I will establish your Seed forever, and build up your throne to all generations. Selah. <a href="19%20psa.htm#89">Psalm 89:3-4</a></div>
+          <div class="scripture">And the angel said to her, Do not fear, Mary, for you have found favor from God. And behold! You will conceive in your womb and bear a Son, and you will call His name Jesus. This One will be great and will be called Son of the Most High. And the Lord God will give Him the throne of His father David. And He will reign over the house of Jacob to the ages, and of His kingdom there will be no end. <a href="42%20luke.htm#1">Luke 1:26-33</a></div>
+          <div class="scripture">I, Jesus, sent My angel to testify these things to you over the assemblies. I am the Root and Offspring of David, the bright and morning Star. <a href="66%20rev.htm#22">Revelation 22:16</a></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="label-cell"><p>Blessing</p></td>
+        <td class="content-cell">
+          <div class="scripture">And I will designate a place for My people Israel, and will plant them, that they may dwell in their own place and not be made to tremble any more... And Jehovah declares to you that Jehovah will make you a house. <a href="10%202sam.htm#7">2 Samuel 7:4-17</a></div>
+          <div class="scripture">Bend your ear and come to Me; hear, and your soul shall live; and I will cut an everlasting covenant with you, the faithful mercies of David. <a href="23%20isa.htm#55">Isaiah 55:3-4</a></div>
+          <div class="scripture">And I will raise up over them one Shepherd. And He shall feed them. My servant David, He shall feed them, and He shall be their Shepherd... And I will cut a covenant of peace with them and make evil beasts cease out of the land. <a href="26%20ezek.htm#34">Ezekiel 34:23-25</a></div>
+          <div class="scripture">For a Child is born; to us a Son is given; and the government is on His shoulder; and His name is called Wonderful, Counselor, The Mighty God, The Everlasting Father, The Prince of Peace. There is no end to the increase of His government and of peace on the throne of David. <a href="23%20isa.htm#9">Isaiah 9:6-8</a></div>
+        </td>
+      </tr>
+      <tr><td class="label-cell"><p>Sign / Token</p></td><td class="content-cell"></td></tr>
+      <tr>
+        <td class="label-cell"><p>Duration</p></td>
+        <td class="content-cell">
+          <div class="scripture">And Jehovah was not willing to destroy the house of David, for the sake of the covenant that He made with David, and as He had spoken, to give a lamp to him and to his sons forever. <a href="14%202chr.htm#21">2 Chronicles 21:7</a></div>
+        </td>
+      </tr>
+      <tr><td class="label-cell"><p>Command</p></td><td class="content-cell"></td></tr>
+      <tr><td class="label-cell"><p>Cursing</p></td><td class="content-cell"></td></tr>
+      <tr>
+        <td class="label-cell"><p>Breaking</p></td>
+        <td class="content-cell">
+          <div class="scripture">...If you can break My covenant of the day, and My covenant of the night, and there should not be day and night in their time, then My covenant with My servant David may also be broken... <a href="24%20jer.htm#33">Jeremiah 33:14-22</a></div>
+          <div class="scripture">I will keep My mercy for him forever, and My covenant shall hold fast with him... I will not profane My covenant, nor change what goes from My lips. Once I have sworn by My holiness; I will not lie to David. His Seed shall be forever, and his throne as the sun before Me. <a href="19%20psa.htm#89">Psalm 89:28-37</a></div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="body-text"><strong>David's Covenant was to bring salvation to ALL of the seed of Abraham.</strong></p>
+  <div class="scripture">And I will raise up over them one Shepherd and He shall feed them. My servant David, He shall feed them, and He shall be to them a shepherd. And I, Jehovah, will be to them for a God and My servant David shall be a ruler among them. I, Jehovah have spoken. And I will cut a covenant of peace with them and give evil beasts to cease out of the land. <a href="26%20ezek.htm#23">Ezekiel 34:23-25</a></div>
+
+  <p class="body-text">These promises led to several developments in Hebrew theology.</p>
+  <p class="body-text"><strong>a) The City of God.</strong> David's city, located on Mount Zion became the focus of soteriological and eschatological interest, rather than the whole of the Promised Land (<a href="19%20psa.htm#48">Psalm 48:2</a>; <a href="23%20isa.htm#2">Isaiah 2:2-4</a>; cf. <a href="66%20rev.htm#21">Revelation 21</a>). It also led to the belief that Jerusalem would never fall, a belief shattered by the conquest by Nebuchadnezzar of Babylon.</p>
+  <p class="body-text"><strong>b) The Messiah.</strong> The idea of an ideal Davidite is developed in the Psalms and the prophetic writings. This "anointed one" or "Messiah" would rule the nations from Zion and serve as a priest after the order of Melchizedek (<a href="19%20psa.htm#2">Psalm 2</a>; <a href="19%20psa.htm#110">Psalm 110</a>). Like his forefather he would be born in Bethlehem in Judah (<a href="33%20mic.htm#5">Micah 5:2</a>; cf. <a href="40%20matt.htm#2">Matthew 2:1-6</a>).</p>
+  <a href="#top" class="back-to-top">↑ Back to Top</a>
+
+  <!-- ══════════════════════════════════ -->
+  <!-- NEW COVENANT -->
+  <!-- ══════════════════════════════════ -->
+  <a id="NewCovenant"></a>
+  <div class="covenant-header">
+    <h1>New Covenant</h1>
+    <h2>As promised in the First Covenant</h2>
+  </div>
+
+  <table class="covenant-table">
+    <tbody>
+      <tr><td class="label-cell"><p>Between</p></td><td class="content-cell"></td></tr>
+      <tr>
+        <td class="label-cell"><p>Blessing</p></td>
+        <td class="content-cell">
+          <p class="body-text"><strong>Eternal life:</strong> <a href="43%20john.htm#3">John 3:15-16</a>, <a href="43%20john.htm#5">John 5:24</a>, <a href="43%20john.htm#6">John 6:47</a>, <a href="45%20rom.htm#6">Romans 6:22-23</a>, <a href="62%201jn.htm#5">1 John 5:11-12</a></p>
+          <p class="body-text"><strong>Salvation from wrath:</strong> <a href="45%20rom.htm#1">Romans 5:9-10</a></p>
+          <p class="body-text"><strong>Adoption as sons:</strong> <a href="48%20gal.htm#4">Galatians 4:7</a>, <a href="49%20eph.htm#1">Ephesians 1:5</a></p>
+          <p class="body-text"><strong>Access to God:</strong> <a href="49%20eph.htm#2">Ephesians 2:8</a>, <a href="58%20heb.htm#4">Hebrews 4:14-16</a>, <a href="58%20heb.htm#10">Hebrews 10:19-23</a></p>
+          <p class="body-text"><strong>Heavenly citizenship:</strong> <a href="49%20eph.htm#2">Ephesians 2:19</a>, <a href="50%20phil.htm#3">Philippians 3:20</a></p>
+          <p class="body-text"><strong>Crown of life:</strong> <a href="59%20jas.htm#1">James 1:12</a>, <a href="66%20rev.htm#2">Revelation 2:10</a></p>
+          <p class="body-text"><strong>The divine nature:</strong> <a href="61%202pet.htm#1">2 Peter 1:4</a></p>
+          <p class="body-text"><strong>New Heaven and New Earth:</strong> <a href="61%202pet.htm#1">2 Peter 3:13</a>, <a href="66%20rev.htm#21">Revelation 21-22</a></p>
+          <p class="body-text"><strong>Access to the tree of life:</strong> <a href="66%20rev.htm#2">Revelation 2:7</a>, <a href="66%20rev.htm#22">Revelation 22:14</a></p>
+          <p class="body-text"><strong>Name in the Book of Life:</strong> <a href="66%20rev.htm#3">Revelation 3:5</a></p>
+          <p class="body-text"><strong>Kingship and priesthood:</strong> <a href="66%20rev.htm#20">Revelation 20:4-6</a>, <a href="66%20rev.htm#1">Revelation 1:5-6</a></p>
+          <p class="body-text"><strong>Immortality of the new body:</strong> <a href="46%201cor.htm#15">1 Corinthians 15:42-54</a>, <a href="47%202cor.htm#5">2 Corinthians 5:1-8</a></p>
+          <p class="body-text"><strong>An eternal inheritance:</strong> <a href="60%201pet.htm#1">1 Peter 1:3</a>, <a href="66%20rev.htm#21">Revelation 21:7</a></p>
+          <p class="body-text"><strong>The promise of the Spirit:</strong> <a href="43%20john.htm#7">John 7:37-39</a>, <a href="44%20acts.htm#2">Acts 2:17-21</a>, <a href="48%20gal.htm#3">Galatians 3:14</a></p>
+        </td>
+      </tr>
+      <tr><td class="label-cell"><p>Sign / Token</p></td><td class="content-cell"></td></tr>
+      <tr><td class="label-cell"><p>Duration</p></td><td class="content-cell"></td></tr>
+      <tr><td class="label-cell"><p>Command</p></td><td class="content-cell"></td></tr>
+      <tr><td class="label-cell"><p>Cursing</p></td><td class="content-cell"></td></tr>
+      <tr><td class="label-cell"><p>Breaking</p></td><td class="content-cell"></td></tr>
+    </tbody>
+  </table>
+  <a href="#top" class="back-to-top">↑ Back to Top</a>
+
+  <!-- ══════════════════════════════════ -->
+  <!-- OTHER COVENANTS -->
+  <!-- ══════════════════════════════════ -->
+  <a id="OtherCovenants"></a>
+  <div class="covenant-header">
+    <h1>Other Covenants</h1>
+  </div>
+
+  <a id="AbrahamandAbimelech"></a>
+  <div class="sub-covenant">
+    <h2>Abraham and Abimelech</h2>
+    <p class="body-text">Abraham cuts a covenant with Abimelech in Genesis 21:22-24. Abimelech is King of Philistines.</p>
+    <div class="scripture">And it happened at that time Abimelech and Phicol, the general of his army, spoke to Abraham, saying, God is with you in all that you do. And now swear to me here by God, that you will not lie to me, and to my son, and to my heir, according to the kindness which I have sworn to you. Do to me and to the land in which you have lived. And Abraham said, I will swear. <a href="01%20gen.htm#21">Genesis 21:22-24</a></div>
+  </div>
+
+  <a id="AbrahamandMamre"></a>
+  <div class="sub-covenant">
+    <h2>Mamre the Amorite and Abraham</h2>
+    <div class="scripture">And one who had escaped came and told Abram the Hebrew; for he was living among the oaks of Mamre the Amorite, the brother of Eshcol and Aner. And these were possessors of a covenant with Abram. <a href="01%20gen.htm#14">Genesis 14:13</a></div>
+  </div>
+  <a href="#top" class="back-to-top">↑ Back to Top</a>
+
+  <a id="ISaacAndSomeone"></a>
+  <div class="sub-covenant">
+    <h2>Isaac with Someone Else</h2>
+    <p class="body-text">Genesis 26</p>
+  </div>
+  <a href="#top" class="back-to-top">↑ Back to Top</a>
+
+  <a id="IsraelandHivites"></a>
+  <div class="sub-covenant">
+    <h2>Israel (Joshua) and the Hivites</h2>
+    <div class="scripture">Scripture — <a href="06%20josh.htm#9">Joshua 9:3-16</a></div>
+  </div>
+  <a href="#top" class="back-to-top">↑ Back to Top</a>
+
+  <a id="IsraelandInhabitants"></a>
+  <div class="sub-covenant">
+    <h2>Israel made covenants with the inhabitants of the Promised Land</h2>
+    <div class="scripture">...that they should not have — <a href="07%20judg.htm#2">Judges 2:1-3</a></div>
+  </div>
+  <a href="#top" class="back-to-top">↑ Back to Top</a>
+
+  <a id="JabeshAndNahash"></a>
+  <div class="sub-covenant">
+    <h2>Jabesh and Nahash</h2>
+    <div class="scripture"><a href="09%201sam.htm#11">1 Samuel 11:1-2</a></div>
+  </div>
+  <a href="#top" class="back-to-top">↑ Back to Top</a>
+
+  <a id="DavidAndJonathan"></a>
+  <div class="sub-covenant">
+    <h2>David and Jonathan</h2>
+    <div class="scripture">Then Jonathan and David made a covenant, because he loved him as his own soul. <a href="09%201sam.htm#18">1 Samuel 18:3</a></div>
+    <div class="scripture">So Jonathan made a covenant with the house of David, saying, Let the LORD even require it at the hand of David's enemies. <a href="09%201sam.htm#20">1 Samuel 20:16</a></div>
+    <div class="scripture">And they cut a covenant, both of them, before Jehovah. And David stayed in the forest, and Jonathan went to his house. <a href="09%201sam.htm#23">1 Samuel 23:18</a></div>
+  </div>
+  <a href="#top" class="back-to-top">↑ Back to Top</a>
+
+  <a id="DavidAndAbner"></a>
+  <div class="sub-covenant">
+    <h2>David and Abner</h2>
+    <div class="scripture">And Abner sent messengers to David for himself, saying, Whose is the land? He said, Cut your covenant with me, and, behold, my hand shall be with you, to bring all Israel around to you... <a href="10%202sam.htm#3">2 Samuel 3:12-14</a></div>
+  </div>
+  <a href="#top" class="back-to-top">↑ Back to Top</a>
+
+  <a id="DavidAndElders"></a>
+  <div class="sub-covenant">
+    <h2>David and the Elders of Israel</h2>
+    <div class="scripture">Therefore came all the elders of Israel to the king to Hebron; and David made a covenant with them in Hebron before the LORD; and they anointed David king over Israel, according to the word of the LORD by Samuel. <a href="13%201chr.htm#11">1 Chronicles 11:3</a></div>
+  </div>
+  <a href="#top" class="back-to-top">↑ Back to Top</a>
+
+  <a id="JehoiadaAndRulers"></a>
+  <div class="sub-covenant">
+    <h2>Jehoiada and the Rulers of the Hundreds</h2>
+    <div class="scripture">Scripture — <a href="12%202ki.htm#11">2 Kings 11:4</a></div>
+    <div class="scripture">Scripture — <a href="14%202chr.htm#23">2 Chronicles 23:1</a></div>
+  </div>
+  <a href="#top" class="back-to-top">↑ Back to Top</a>
+
+  <a id="UnsureAndAhab"></a>
+  <div class="sub-covenant">
+    <h2>??? and Ahab</h2>
+    <div class="scripture">And Benhadad said unto him, The cities, which my father took from thy father, I will restore; and thou shalt make streets for thee in Damascus, as my father made in Samaria. Then said Ahab, I will send thee away with this covenant. So he made a covenant with him, and sent him away.</div>
+  </div>
+  <a href="#top" class="back-to-top">↑ Back to Top</a>
+
+  <a id="SomeoneAndSomeone"></a>
+  <div class="sub-covenant">
+    <h2>Between ??? and ???</h2>
+    <div class="scripture">And the seventh year Jehoiada sent and fetched the rulers over hundreds, with the captains and the guard, and brought them to him into the house of the LORD, and made a covenant with them, and took an oath of them in the house of the LORD, and shewed them the king's son. <a href="12%202ki.htm#11">2 Kings 11:4</a></div>
+  </div>
+  <a href="#top" class="back-to-top">↑ Back to Top</a>
+
+  <a id="JehovahAndKing"></a>
+  <div class="sub-covenant">
+    <h2>Jehovah and the King</h2>
+    <div class="scripture"><a href="12%202ki.htm#11">2 Kings 11:17</a></div>
+  </div>
+  <a href="#top" class="back-to-top">↑ Back to Top</a>
+
+  <a id="JehoiadaANdCaptains"></a>
+  <div class="sub-covenant">
+    <h2>Jehoiada and the Captains of Hundreds</h2>
+    <div class="scripture">And in the seventh year Jehoiada strengthened himself, and took the captains of hundreds... into covenant with him. <a href="14%202chr.htm#23">2 Chronicles 23:1</a></div>
+  </div>
+  <a href="#top" class="back-to-top">↑ Back to Top</a>
+
+  <a id="KingAndJehovah"></a>
+  <div class="sub-covenant">
+    <h2>The King and Jehovah</h2>
+    <div class="scripture">Scripture — <a href="12%202ki.htm#23">2 Kings 23:3</a></div>
+  </div>
+  <a href="#top" class="back-to-top">↑ Back to Top</a>
+
+  <a id="AssemblyAndKing"></a>
+  <div class="sub-covenant">
+    <h2>The Assembly and the King</h2>
+    <div class="scripture">Then all the assembly made a covenant with the king in the house of God. And he said to them, "Behold, the king's son shall reign, as the LORD has said of the sons of David." <a href="14%202chr.htm#23">2 Chronicles 23:3</a></div>
+    <div class="scripture">And Jehoiada made a covenant between him, and between all the people, and between the king, that they should be the LORD'S people. <a href="14%202chr.htm#23">2 Chronicles 23:16</a></div>
+  </div>
+  <a href="#top" class="back-to-top">↑ Back to Top</a>
+
+  <a id="SomeoneAndSomeone2"></a>
+  <div class="sub-covenant">
+    <h2>??? and ???</h2>
+    <div class="scripture">Now it is in mine heart to make a covenant with the LORD God of Israel, that his fierce wrath may turn away from us. <a href="14%202chr.htm#29">2 Chronicles 29:10</a></div>
+  </div>
+  <a href="#top" class="back-to-top">↑ Back to Top</a>
+
+  <a id="KingAndJehovah2"></a>
+  <div class="sub-covenant">
+    <h2>The King and Jehovah</h2>
+    <div class="scripture">And the king stood in his place, and made a covenant before the LORD, to walk after the LORD, and to keep his commandments, and his testimonies, and his statutes, with all his heart, and with all his soul... And the inhabitants of Jerusalem did according to the covenant of God, the God of their fathers. <a href="14%202chr.htm#34">2 Chronicles 34:31-32</a></div>
+  </div>
+  <a href="#top" class="back-to-top">↑ Back to Top</a>
+
+  <a id="Others"></a>
+  <div class="sub-covenant">
+    <h2>Miscellaneous Covenants</h2>
+    <div class="scripture">Now therefore let us make a covenant with our God to put away all the wives, and such as are born of them, according to the counsel of my lord, and of those that tremble at the commandment of our God; and let it be done according to the law. <a href="15%20ezra.htm#10">Ezra 10:3</a></div>
+    <div class="scripture">This is the word that came unto Jeremiah from the LORD, after that the king Zedekiah had made a covenant with all the people which were at Jerusalem, to proclaim liberty unto them; That every man should let his manservant, and every man his maidservant, being an Hebrew or an Hebrewess, go free... <a href="24%20jer.htm#34">Jeremiah 34:8-10</a></div>
+  </div>
+  <a href="#top" class="back-to-top">↑ Back to Top</a>
+
+  <div class="section-divider"></div>
+
+</div><!-- /content-wrapper -->
+</body>
+</html>

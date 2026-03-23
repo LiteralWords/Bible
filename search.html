@@ -1,0 +1,591 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bible search</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora&display=swap" rel="stylesheet">
+</head>
+<style>
+  /* ── Standard page styles ── */
+  body {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 20px;
+    line-height: 1.4;
+    color: #1a1a1a;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  h1          { font-size: 24px; text-align: center; }
+  h2          { font-size: 20px; text-align: center; }
+  h3          { font-size: 20px; }
+  h4          { font-size: 24px; }
+  p           { font-size: 20px; }
+  span        { font-size: 20px; }
+  a           { font-size: 20px; }
+
+  .indent     { font-size: 18px; line-height: 200%; }
+  .scripture  { font-size: 20px; margin-left: 50px; color: blue; }
+  .strongs    { font-size: 18px; color: green; }
+  .highlight  { background-color: #FFFF00; }
+  .nolinespace{ display: inline; }
+  .biglink    { font-size: 24px; }
+
+  /* ── Search UI ── */
+  :root {
+    --parchment: #f5efe0;
+    --parchment-dark: #e8dcc8;
+    --ink: #2c1e0f;
+    --ink-light: #4a3520;
+    --gold: #9a7a3a;
+    --gold-light: #c4a45e;
+    --scripture-blue: #1a3a5c;
+    --scripture-bg: #eef3f8;
+    --border: #c4a45e;
+    --shadow: rgba(44,30,15,0.12);
+  }
+
+  .search-wrap {
+    max-width: 720px;
+    margin: 36px 0 0;
+  }
+
+  .search-row {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  #searchInput {
+    flex: 1;
+    padding: 12px 18px;
+    font-family: 'Georgia', serif;
+    font-size: 1rem;
+    border: 2px solid var(--border);
+    background: #fff;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  #searchInput:focus { border-color: var(--scripture-blue); }
+
+  #searchBtn {
+    padding: 12px 28px;
+    background: var(--ink);
+    color: var(--gold-light);
+    border: 2px solid var(--border);
+    font-family: 'Georgia', serif;
+    font-size: 0.95rem;
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    transition: background 0.2s;
+  }
+
+  #searchBtn:hover { background: #3d2a14; }
+
+  .options-row {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .options-row label {
+    font-family: 'Georgia', serif;
+    font-size: 0.88rem;
+    color: var(--ink-light);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+  }
+
+  .options-row select {
+    font-family: 'Georgia', serif;
+    font-size: 0.88rem;
+    padding: 4px 8px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--ink);
+  }
+
+  /* Testament filter */
+  .testament-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+
+  .testament-row span {
+    font-family: 'Georgia', serif;
+    font-size: 0.88rem;
+    color: var(--ink-light);
+    margin-right: 4px;
+  }
+
+  .testament-btn {
+    padding: 6px 16px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--ink-light);
+    font-family: 'Georgia', serif;
+    font-size: 0.88rem;
+    cursor: pointer;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s;
+  }
+
+  .testament-btn input[type="radio"] { display: none; }
+
+  .testament-btn:has(input:checked) {
+    background: var(--ink);
+    color: var(--gold-light);
+    border-color: var(--ink);
+  }
+
+  .testament-btn:hover:not(:has(input:checked)) {
+    background: var(--parchment-dark);
+  }
+
+  /* Status */
+  .result-status {
+    max-width: 720px;
+    margin: 18px 0 4px;
+    font-family: 'Georgia', serif;
+    font-size: 0.88rem;
+    color: var(--gold);
+    font-style: italic;
+    min-height: 1.4em;
+  }
+
+  /* Results */
+  .result-item {
+    border-left: 3px solid var(--scripture-blue);
+    background: var(--scripture-bg);
+    margin: 10px 0;
+    padding: 14px 18px;
+    animation: fadeIn 0.15s ease;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; } }
+
+  .result-ref {
+    font-family: 'Georgia', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+
+  .result-ref a {
+    font-family: 'Georgia', serif;
+    font-size: 0.8rem;
+    color: var(--gold);
+    text-decoration: none;
+  }
+
+  .result-ref a:hover { color: var(--ink); text-decoration: underline; }
+
+  .result-text {
+    font-family: 'Georgia', serif;
+    color: var(--scripture-blue);
+    font-size: 0.98rem;
+    line-height: 1.75;
+  }
+
+  .result-text mark {
+    background: #ffe48a;
+    color: var(--ink);
+    padding: 0 2px;
+    border-radius: 2px;
+  }
+
+  /* Pagination */
+  .pagination {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 24px 0 10px;
+  }
+
+  .page-btn {
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--ink-light);
+    cursor: pointer;
+    font-family: 'Georgia', serif;
+    font-size: 0.88rem;
+    transition: all 0.15s;
+  }
+
+  .page-btn:hover, .page-btn.active {
+    background: var(--ink);
+    color: var(--gold-light);
+    border-color: var(--ink);
+  }
+
+  /* Empty / error */
+  .state-msg {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    color: var(--ink-light);
+    padding: 30px 0;
+  }
+
+  .index-error {
+    max-width: 720px;
+    margin: 20px 0;
+    padding: 20px 24px;
+    background: #fff3f3;
+    border-left: 3px solid #c0392b;
+    color: #7b1a1a;
+    font-family: 'Georgia', serif;
+    font-size: 0.95rem;
+    line-height: 1.8;
+  }
+
+  .index-error code {
+    background: #f8e8e8;
+    padding: 2px 6px;
+    font-family: monospace;
+    font-size: 0.9rem;
+  }
+</style>
+<body bgcolor="ffffff" topmargin="0" leftmargin="0">
+
+<table width="100%" border="0" cellpadding="12">
+
+<td valign="top" width="100%" bgcolor="white">
+<b>
+
+<h4 style="text-align: center;">
+  Bible search
+</h4>
+
+<hr>
+<a href="litv.htm" class="biglink">Bible</a>&nbsp;&nbsp;
+<a href="notes.htm" class="biglink">Notes</a>&nbsp;&nbsp;
+<a href="creeds.htm" class="biglink">Creeds</a>&nbsp;&nbsp; 
+<a href="search.html" class="biglink">Search</a>&nbsp;&nbsp;
+<!--
+<a href="Baptist%20confession%20of%20faith.htm">Baptist confession of faith</a>&nbsp;&nbsp; 
+-->
+
+
+<h4>Bible Search</h4>
+
+<div class="search-wrap">
+  <div class="search-row">
+    <input type="text" id="searchInput" placeholder="Enter a word or phrase…" autocomplete="off" />
+    <button id="searchBtn">Search</button>
+  </div>
+  <div class="testament-row">
+    <span>Search:</span>
+    <label class="testament-btn"><input type="radio" name="testament" value="all" checked /> All Scripture</label>
+    <label class="testament-btn"><input type="radio" name="testament" value="ot" /> Old Covenant</label>
+    <label class="testament-btn"><input type="radio" name="testament" value="nt" /> New Covenant</label>
+  </div>
+  <div class="options-row">
+    <label>
+      <input type="checkbox" id="wholeWord" /> Whole word only
+    </label>
+    <label>
+      <input type="checkbox" id="caseSensitive" /> Case sensitive
+    </label>
+    <label>
+      Filter book:
+      <select id="bookFilter">
+        <option value="">All books</option>
+        <optgroup label="Old Testament">
+          <option value="Genesis">Genesis</option>
+          <option value="Exodus">Exodus</option>
+          <option value="Leviticus">Leviticus</option>
+          <option value="Numbers">Numbers</option>
+          <option value="Deuteronomy">Deuteronomy</option>
+          <option value="Joshua">Joshua</option>
+          <option value="Judges">Judges</option>
+          <option value="Ruth">Ruth</option>
+          <option value="1 Samuel">1 Samuel</option>
+          <option value="2 Samuel">2 Samuel</option>
+          <option value="1 Kings">1 Kings</option>
+          <option value="2 Kings">2 Kings</option>
+          <option value="1 Chronicles">1 Chronicles</option>
+          <option value="2 Chronicles">2 Chronicles</option>
+          <option value="Ezra">Ezra</option>
+          <option value="Nehemiah">Nehemiah</option>
+          <option value="Esther">Esther</option>
+          <option value="Job">Job</option>
+          <option value="Psalms">Psalms</option>
+          <option value="Proverbs">Proverbs</option>
+          <option value="Ecclesiastes">Ecclesiastes</option>
+          <option value="Song of Solomon">Song of Solomon</option>
+          <option value="Isaiah">Isaiah</option>
+          <option value="Jeremiah">Jeremiah</option>
+          <option value="Lamentations">Lamentations</option>
+          <option value="Ezekiel">Ezekiel</option>
+          <option value="Daniel">Daniel</option>
+          <option value="Hosea">Hosea</option>
+          <option value="Joel">Joel</option>
+          <option value="Amos">Amos</option>
+          <option value="Obadiah">Obadiah</option>
+          <option value="Jonah">Jonah</option>
+          <option value="Micah">Micah</option>
+          <option value="Nahum">Nahum</option>
+          <option value="Habakkuk">Habakkuk</option>
+          <option value="Zephaniah">Zephaniah</option>
+          <option value="Haggai">Haggai</option>
+          <option value="Zechariah">Zechariah</option>
+          <option value="Malachi">Malachi</option>
+        </optgroup>
+        <optgroup label="New Testament">
+          <option value="Matthew">Matthew</option>
+          <option value="Mark">Mark</option>
+          <option value="Luke">Luke</option>
+          <option value="John">John</option>
+          <option value="Acts">Acts</option>
+          <option value="Romans">Romans</option>
+          <option value="1 Corinthians">1 Corinthians</option>
+          <option value="2 Corinthians">2 Corinthians</option>
+          <option value="Galatians">Galatians</option>
+          <option value="Ephesians">Ephesians</option>
+          <option value="Philippians">Philippians</option>
+          <option value="Colossians">Colossians</option>
+          <option value="1 Thessalonians">1 Thessalonians</option>
+          <option value="2 Thessalonians">2 Thessalonians</option>
+          <option value="1 Timothy">1 Timothy</option>
+          <option value="2 Timothy">2 Timothy</option>
+          <option value="Titus">Titus</option>
+          <option value="Philemon">Philemon</option>
+          <option value="Hebrews">Hebrews</option>
+          <option value="James">James</option>
+          <option value="1 Peter">1 Peter</option>
+          <option value="2 Peter">2 Peter</option>
+          <option value="1 John">1 John</option>
+          <option value="2 John">2 John</option>
+          <option value="3 John">3 John</option>
+          <option value="Jude">Jude</option>
+          <option value="Revelation">Revelation</option>
+        </optgroup>
+      </select>
+    </label>
+  </div>
+</div>
+
+<div class="result-status" id="status"></div>
+<div id="results"></div>
+
+<!-- The generated index — must be in same folder -->
+<script src="search-index.js"></script>
+
+<script>
+(function () {
+
+  const PER_PAGE = 30;
+  let allMatches = [];
+  let currentPage = 1;
+
+  // ── Check index loaded ──────────────────────────────────────
+  if (typeof BIBLE_INDEX === 'undefined') {
+    document.getElementById('results').innerHTML = `
+      <div class="index-error">
+        <strong>Search index not found.</strong><br><br>
+        The file <code>search-index.js</code> is missing from this folder.<br><br>
+        To generate it:
+        <ol style="margin:10px 0 0 20px;line-height:2">
+          <li>Install Node.js from <strong>nodejs.org</strong></li>
+          <li>Open a Command Prompt in this folder</li>
+          <li>Run: <code>node build-index.js</code></li>
+          <li>Refresh this page</li>
+        </ol>
+      </div>`;
+    document.getElementById('status').textContent = '';
+    return;
+  }
+
+  // ── Highlight matches in text ───────────────────────────────
+  function highlight(text, regex) {
+    return text.replace(regex, m => `<mark>${m}</mark>`);
+  }
+
+  // ── Build regex from search term ────────────────────────────
+  function buildRegex(term, wholeWord, caseSensitive) {
+    let escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    if (wholeWord) escaped = `\\b${escaped}\\b`;
+    return new RegExp(escaped, caseSensitive ? 'g' : 'gi');
+  }
+
+  // ── Render one page of results ──────────────────────────────
+  function renderPage(page, regex) {
+    currentPage = page;
+    const start = (page - 1) * PER_PAGE;
+    const slice = allMatches.slice(start, start + PER_PAGE);
+
+    const resultsEl = document.getElementById('results');
+    resultsEl.innerHTML = '';
+
+    if (slice.length === 0) {
+      resultsEl.innerHTML = '<div class="state-msg">No results on this page.</div>';
+      return;
+    }
+
+    slice.forEach(m => {
+      const div = document.createElement('div');
+      div.className = 'result-item';
+
+      const verseLabel = m.verse > 0 ? `:${m.verse}` : '';
+      const refLabel = `${m.book} ${m.chapter}${verseLabel}`;
+      const link = `${m.file}#${m.chapter}`;
+      const highlighted = highlight(m.text, regex);
+
+      div.innerHTML = `
+        <div class="result-ref">
+          <a href="${link}" target="_blank">${refLabel}</a>
+        </div>
+        <div class="result-text">${highlighted}</div>`;
+      resultsEl.appendChild(div);
+    });
+
+    // Pagination
+    const totalPages = Math.ceil(allMatches.length / PER_PAGE);
+    if (totalPages > 1) {
+      const pag = document.createElement('div');
+      pag.className = 'pagination';
+
+      // Prev
+      if (page > 1) {
+        const btn = document.createElement('button');
+        btn.className = 'page-btn';
+        btn.textContent = '← Prev';
+        btn.onclick = () => { renderPage(page - 1, regex); scrollToResults(); };
+        pag.appendChild(btn);
+      }
+
+      // Page numbers — show window around current
+      const lo = Math.max(1, page - 3);
+      const hi = Math.min(totalPages, page + 3);
+      for (let p = lo; p <= hi; p++) {
+        const btn = document.createElement('button');
+        btn.className = 'page-btn' + (p === page ? ' active' : '');
+        btn.textContent = p;
+        const pp = p;
+        btn.onclick = () => { renderPage(pp, regex); scrollToResults(); };
+        pag.appendChild(btn);
+      }
+
+      // Next
+      if (page < totalPages) {
+        const btn = document.createElement('button');
+        btn.className = 'page-btn';
+        btn.textContent = 'Next →';
+        btn.onclick = () => { renderPage(page + 1, regex); scrollToResults(); };
+        pag.appendChild(btn);
+      }
+
+      resultsEl.appendChild(pag);
+    }
+  }
+
+  function scrollToResults() {
+    document.getElementById('status').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  const OT_BOOKS = new Set([
+    'Genesis','Exodus','Leviticus','Numbers','Deuteronomy','Joshua','Judges','Ruth',
+    '1 Samuel','2 Samuel','1 Kings','2 Kings','1 Chronicles','2 Chronicles','Ezra',
+    'Nehemiah','Esther','Job','Psalms','Proverbs','Ecclesiastes','Song of Solomon',
+    'Isaiah','Jeremiah','Lamentations','Ezekiel','Daniel','Hosea','Joel','Amos',
+    'Obadiah','Jonah','Micah','Nahum','Habakkuk','Zephaniah','Haggai','Zechariah','Malachi'
+  ]);
+
+  const NT_BOOKS = new Set([
+    'Matthew','Mark','Luke','John','Acts','Romans','1 Corinthians','2 Corinthians',
+    'Galatians','Ephesians','Philippians','Colossians','1 Thessalonians','2 Thessalonians',
+    '1 Timothy','2 Timothy','Titus','Philemon','Hebrews','James','1 Peter','2 Peter',
+    '1 John','2 John','3 John','Jude','Revelation'
+  ]);
+
+  // ── Main search ─────────────────────────────────────────────
+  function doSearch() {
+    const term = document.getElementById('searchInput').value.trim();
+    const wholeWord = document.getElementById('wholeWord').checked;
+    const caseSensitive = document.getElementById('caseSensitive').checked;
+    const bookFilter = document.getElementById('bookFilter').value;
+    const testament = document.querySelector('input[name="testament"]:checked').value;
+    const statusEl = document.getElementById('status');
+    const resultsEl = document.getElementById('results');
+
+    if (!term) {
+      statusEl.textContent = '';
+      resultsEl.innerHTML = '';
+      return;
+    }
+
+    let regex;
+    try {
+      regex = buildRegex(term, wholeWord, caseSensitive);
+    } catch (e) {
+      statusEl.textContent = 'Invalid search term.';
+      resultsEl.innerHTML = '';
+      return;
+    }
+
+    allMatches = [];
+
+    for (const bookObj of BIBLE_INDEX) {
+      // Testament filter
+      if (testament === 'ot' && !OT_BOOKS.has(bookObj.book)) continue;
+      if (testament === 'nt' && !NT_BOOKS.has(bookObj.book)) continue;
+      // Book filter
+      if (bookFilter && bookObj.book !== bookFilter) continue;
+
+      for (const chap of bookObj.chapters) {
+        for (const v of chap.verses) {
+          if (regex.test(v.text)) {
+            allMatches.push({
+              book: bookObj.book,
+              file: bookObj.file,
+              chapter: chap.chapter,
+              verse: v.verse,
+              text: v.text
+            });
+          }
+          regex.lastIndex = 0;
+        }
+      }
+    }
+
+    if (allMatches.length === 0) {
+      statusEl.textContent = `No results found for "${term}".`;
+      resultsEl.innerHTML = '<div class="state-msg">Try a different word or phrase.</div>';
+      return;
+    }
+
+    const total = allMatches.length;
+    const pages = Math.ceil(total / PER_PAGE);
+    const scope = bookFilter ? bookFilter
+                : testament === 'ot' ? 'the Old Covenant'
+                : testament === 'nt' ? 'the New Covenant'
+                : 'all Scripture';
+    statusEl.textContent = `${total} result${total !== 1 ? 's' : ''} found in ${scope} — showing page 1 of ${pages}`;
+
+    renderPage(1, regex);
+    scrollToResults();
+  }
+
+  // ── Event listeners ─────────────────────────────────────────
+  document.getElementById('searchBtn').addEventListener('click', doSearch);
+  document.getElementById('searchInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doSearch();
+  });
+
+})();
+</script>
+</body>
+</html>
