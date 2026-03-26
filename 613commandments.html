@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>613 Commands Search</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora&display=swap" rel="stylesheet">
+</head>
+<style>
+  body        { font-family: 'Lora', Georgia, serif; font-size: 20px; line-height: 1.4; color: #1a1a1a; margin: 0 auto; padding: 0 20px; }
+  h1          { font-size: 24px; text-align: center; }
+  h4          { font-size: 24px; }
+  a           { font-family: 'Lora', Georgia, serif; }
+  .biglink    { font-size: 24px; }
+
+  /* ── Search UI ── */
+  :root {
+    --ink: #2c1e0f;
+    --ink-light: #4a3520;
+    --gold: #9a7a3a;
+    --gold-light: #c4a45e;
+    --border: #c4a45e;
+    --scripture-blue: #1a3a5c;
+    --scripture-bg: #eef3f8;
+    --parchment-dark: #e8dcc8;
+  }
+
+  .search-wrap  { max-width: 820px; margin: 24px 0 0; }
+
+  .search-row   { display: flex; gap: 10px; align-items: stretch; }
+
+  #searchInput  {
+    flex: 1;
+    padding: 12px 18px;
+    font-family: 'Lora', Georgia, serif;
+    font-size: 1rem;
+    border: 2px solid var(--border);
+    background: #fff;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  #searchInput:focus { border-color: var(--scripture-blue); }
+
+  #searchBtn {
+    padding: 12px 28px;
+    background: var(--ink);
+    color: var(--gold-light);
+    border: 2px solid var(--border);
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.95rem;
+    cursor: pointer;
+    letter-spacing: 0.06em;
+    transition: background 0.2s;
+  }
+  #searchBtn:hover { background: #3d2a14; }
+
+  #clearBtn {
+    padding: 12px 18px;
+    background: #fff;
+    color: var(--ink-light);
+    border: 2px solid var(--border);
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  #clearBtn:hover { background: var(--parchment-dark); }
+
+  .options-row {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-top: 12px;
+    flex-wrap: wrap;
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.88rem;
+    color: var(--ink-light);
+  }
+  .options-row label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+
+  /* ── Status bar ── */
+  .result-status {
+    margin: 16px 0 8px;
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.9rem;
+    color: var(--gold);
+    font-style: italic;
+    min-height: 1.4em;
+  }
+
+  /* ── Results list ── */
+  .result-item {
+    border-left: 3px solid var(--scripture-blue);
+    background: var(--scripture-bg);
+    margin: 8px 0;
+    padding: 12px 18px;
+    animation: fadeIn 0.12s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(3px); } to { opacity:1; } }
+
+  .result-number {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+
+  .result-text {
+    font-family: 'Lora', Georgia, serif;
+    color: var(--scripture-blue);
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .result-ref {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.85rem;
+    color: var(--ink-light);
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  .result-text mark {
+    background: #ffe48a;
+    color: var(--ink);
+    padding: 0 2px;
+    border-radius: 2px;
+  }
+
+  /* ── Pagination ── */
+  .pagination {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 20px 0 10px;
+  }
+  .page-btn {
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--ink-light);
+    cursor: pointer;
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.88rem;
+    transition: all 0.15s;
+  }
+  .page-btn:hover, .page-btn.active {
+    background: var(--ink);
+    color: var(--gold-light);
+    border-color: var(--ink);
+  }
+
+  /* ── Empty / error ── */
+  .state-msg {
+    font-family: 'Lora', Georgia, serif;
+    font-style: italic;
+    color: var(--ink-light);
+    padding: 24px 0;
+  }
+</style>
+
+<body>
+<a id="top"></a>
+<h4 style="text-align: center;">613 Commands Search</h4>
+<hr>
+<a href="index.html" class="biglink">Bible</a>&nbsp;&nbsp;
+<a href="notes.html" class="biglink">Notes</a>&nbsp;&nbsp;
+<a href="creeds.html" class="biglink">Creeds</a>&nbsp;&nbsp;
+<a href="search.html" class="biglink">Search</a>&nbsp;&nbsp;
+<a href="613commandments.html" class="biglink">613 Commands</a>&nbsp;&nbsp;
+<hr>
+
+<h1>613 Commands Search</h1>
+
+<div class="search-wrap">
+  <div class="search-row">
+    <input type="text" id="searchInput" placeholder="Search the 613 commands…" autocomplete="off" />
+    <button id="searchBtn">Search</button>
+    <button id="clearBtn">Show All</button>
+  </div>
+  <div class="options-row">
+    <label><input type="checkbox" id="wholeWord" /> Whole word only</label>
+    <label><input type="checkbox" id="caseSensitive" /> Case sensitive</label>
+  </div>
+</div>
+
+<div class="result-status" id="status"></div>
+<div id="results"></div>
+
+<script>
+(function () {
+
+  // ── The 613 commands ────────────────────────────────────────
+  // Each entry: { num, text, ref }
+  const COMMANDS = [
+    { num:1,   text:"To know there is a God.",                                                                                          ref:"Exodus 20:2" },
+    { num:2,   text:"To have not other gods.",                                                                                          ref:"Exodus 20:3" },
+    { num:3,   text:"To know that He is one.",                                                                                          ref:"Deuteronomy 6:4" },
+    { num:4,   text:"To love Him.",                                                                                                     ref:"Deuteronomy 6:5" },
+    { num:5,   text:"To fear Him.",                                                                                                     ref:"Deuteronomy 10:20" },
+    { num:6,   text:"To sanctify His Name.",                                                                                            ref:"Leviticus 22:32" },
+    { num:7,   text:"Not to profane His Name.",                                                                                         ref:"Leviticus 22:32" },
+    { num:8,   text:"To worship Him as He has ordered and not destroy holy objects.",                                                   ref:"Deuteronomy 12:4" },
+    { num:9,   text:"To listen to the true prophet.",                                                                                   ref:"Deuteronomy 18:15" },
+    { num:10,  text:"Not to test the prophet.",                                                                                         ref:"Deuteronomy 6:16" },
+    { num:11,  text:"To emulate His ways.",                                                                                             ref:"Deuteronomy 28:9" },
+    { num:12,  text:"To be with those who only worship Him.",                                                                           ref:"Deuteronomy 10:20" },
+    { num:13,  text:"To love your neighbor as yourself.",                                                                               ref:"Leviticus 19:18" },
+    { num:14,  text:"To love converts.",                                                                                                ref:"Deuteronomy 10:19" },
+    { num:15,  text:"Not to hate your brother in your heart.",                                                                          ref:"Leviticus 19:17" },
+    { num:16,  text:"To reprove your brother when necessary.",                                                                          ref:"Leviticus 19:17" },
+    { num:17,  text:"Not to embarrass others.",                                                                                         ref:"Leviticus 19:17" },
+    { num:18,  text:"Not to oppress the weak.",                                                                                         ref:"Exodus 22:21" },
+    { num:19,  text:"Not to slander.",                                                                                                  ref:"Leviticus 19:16" },
+    { num:20,  text:"Not to take revenge.",                                                                                             ref:"Leviticus 19:18" },
+    { num:21,  text:"Not to bear a grudge.",                                                                                            ref:"Leviticus 19:18" },
+    { num:22,  text:"Teach Torah to your children.",                                                                                    ref:"Deuteronomy 6:7" },
+    { num:23,  text:"To respect and defer to the elders.",                                                                              ref:"Leviticus 19:32" },
+    { num:24,  text:"Do not turn to the ways of idol worship.",                                                                         ref:"Leviticus 19:4" },
+    { num:25,  text:"Let the fringes on your clothes remind you to have pure conduct.",                                                 ref:"Numbers 15:39" },
+    { num:26,  text:"Not to blaspheme or curse a judge.",                                                                               ref:"Exodus 22:27" },
+    { num:27,  text:"Not to worship idols.",                                                                                            ref:"Exodus 20:5" },
+    { num:28,  text:"Not to bow down to idols.",                                                                                        ref:"Exodus 20:5" },
+    { num:29,  text:"Not to make an idol.",                                                                                             ref:"Exodus 20:4" },
+    { num:30,  text:"Not to make or cast an image.",                                                                                    ref:"Leviticus 19:4" },
+    { num:31,  text:"Not to make gods of silver or gold.",                                                                              ref:"Exodus 20:20" },
+    { num:32,  text:"Not to turn a people to idolatry.",                                                                                ref:"Exodus 23:13" },
+    { num:33,  text:"To destroy a city that has turned to idol worship.",                                                               ref:"Deuteronomy 13:17" },
+    { num:34,  text:"Not to rebuild that city.",                                                                                        ref:"Deuteronomy 13:17" },
+    { num:35,  text:"Not to retain any benefit from that city.",                                                                        ref:"Deuteronomy 13:18" },
+    { num:36,  text:"Not to missionize a person to idol worship.",                                                                      ref:"Deuteronomy 13:12" },
+    { num:37,  text:"Not to love the missionary.",                                                                                      ref:"Deuteronomy 13:9" },
+    { num:38,  text:"Not to stop hating him.",                                                                                          ref:"Deuteronomy 13:9" },
+    { num:39,  text:"Not to save him.",                                                                                                 ref:"Deuteronomy 13:9" },
+    { num:40,  text:"Not to speak in his defense.",                                                                                     ref:"Deuteronomy 13:9" },
+    { num:41,  text:"Not to refrain from incriminating him.",                                                                           ref:"Deuteronomy 13:9" },
+    { num:42,  text:"Not to prophesize in idolatry.",                                                                                   ref:"Deuteronomy 18:20" },
+    { num:43,  text:"To ignore the false prophet.",                                                                                     ref:"Deuteronomy 13:4" },
+    { num:44,  text:"Not to prophesize falsely in God's name.",                                                                         ref:"Deuteronomy 18:20" },
+    { num:45,  text:"Not to fear killing a false prophet.",                                                                             ref:"Deuteronomy 18:22" },
+    { num:46,  text:"Never swear in the name of an idol.",                                                                              ref:"Exodus 23:13" },
+    { num:47,  text:"Not to perform as or acknowledge those who purport to channel spirits.",                                           ref:"Leviticus 19:31" },
+    { num:48,  text:"Not to perform as or consult fortunetellers.",                                                                     ref:"Leviticus 19:31" },
+    { num:49,  text:"Not to burn your children in a sacrificial fire to Molech.",                                                       ref:"Leviticus 18:21" },
+    { num:50,  text:"Not to erect a stone pillar in a place of public worship.",                                                        ref:"Deuteronomy 16:22" },
+    { num:51,  text:"Not to erect an idol or bow down on a smooth stone for worship.",                                                  ref:"Leviticus 26:1" },
+    { num:52,  text:"Not to plant a tree as a sacred pole.",                                                                            ref:"Deuteronomy 16:21" },
+    { num:53,  text:"Destroy idols, their accessories, and the places where they were worshipped.",                                     ref:"Deuteronomy 12:2" },
+    { num:54,  text:"Do not derive benefit from idols or bring abominations home.",                                                     ref:"Deuteronomy 7:26" },
+    { num:55,  text:"Do not derive benefit from the gold and silver accessories of idols.",                                             ref:"Deuteronomy 7:25" },
+    { num:56,  text:"Make no covenant with Canaanites or their gods.",                                                                  ref:"Deuteronomy 7:2" },
+    { num:57,  text:"Show them no favor.",                                                                                              ref:"Deuteronomy 7:2" },
+    { num:58,  text:"Not to let them dwell in your land.",                                                                              ref:"Exodus 23:33" },
+    { num:59,  text:"Not to imitate their customs and clothing.",                                                                       ref:"Leviticus 20:23" },
+    { num:60,  text:"Not to be superstitious.",                                                                                         ref:"Leviticus 19:26" },
+    { num:61,  text:"To not self-induce a trance to foresee events or tolerate soothsayers.",                                          ref:"Deuteronomy 18:10" },
+    { num:62,  text:"Not to engage in astrology.",                                                                                      ref:"Leviticus 19:26" },
+    { num:63,  text:"Not to say incantations or cast spells.",                                                                          ref:"Deuteronomy 18:11" },
+    { num:64,  text:"Not to attempt contacting the dead.",                                                                              ref:"Deuteronomy 18:11" },
+    { num:65,  text:"Not to consult with mediums.",                                                                                     ref:"Deuteronomy 18:11" },
+    { num:66,  text:"Not to converse with wizards.",                                                                                    ref:"Deuteronomy 18:11" },
+    { num:67,  text:"Not to do sorcery.",                                                                                               ref:"Deuteronomy 18:10" },
+    { num:68,  text:"To not cut your hair at the temples.",                                                                             ref:"Leviticus 19:27" },
+    { num:69,  text:"To not shave your beard.",                                                                                         ref:"Leviticus 19:27" },
+    { num:70,  text:"Men must not wear women's clothes.",                                                                               ref:"Deuteronomy 22:5" },
+    { num:71,  text:"Women must not wear men's clothes.",                                                                               ref:"Deuteronomy 22:5" },
+    { num:72,  text:"Not to tattoo your skin.",                                                                                         ref:"Leviticus 19:28" },
+    { num:73,  text:"Not to tear your skin for idolatry or mourning.",                                                                  ref:"Deuteronomy 14:1" },
+    { num:74,  text:"Not to shave your head in mourning.",                                                                              ref:"Deuteronomy 14:1" },
+    { num:75,  text:"Wrongdoers must correct their ways and confess before God.",                                                       ref:"Numbers 5:7" },
+    { num:76,  text:"Recite the central prayers twice daily and always study Torah, wherever you are.",                                 ref:"Deuteronomy 6:7" },
+    { num:77,  text:"Serve God with prayer.",                                                                                           ref:"Exodus 23:25" },
+    { num:78,  text:"The priests, who are the sons of Aaron, must bless the nation.",                                                   ref:"Numbers 6:23" },
+    { num:79,  text:"To wear phylacteries so the laws will be a pendant on your forehead.",                                             ref:"Deuteronomy 6:8" },
+    { num:80,  text:"To bind phylacteries so that the laws will be a sign on the arm.",                                                 ref:"Deuteronomy 6:8" },
+    { num:81,  text:"To put up a Mezuzah so that the laws will be on the doorposts of your house.",                                    ref:"Deuteronomy 6:9" },
+    { num:82,  text:"Each male must write a Torah scroll.",                                                                             ref:"Deuteronomy 31:19" },
+    { num:83,  text:"The king must write a second Torah scroll.",                                                                       ref:"Deuteronomy 17:18" },
+    { num:84,  text:"To have fringes on the corners of your garments.",                                                                 ref:"Numbers 15:38" },
+    { num:85,  text:"Bless God after meals.",                                                                                           ref:"Deuteronomy 8:10" },
+    { num:86,  text:"To circumcise every male on the eighth day.",                                                                      ref:"Leviticus 12:3" },
+    { num:87,  text:"To rest on the seventh day.",                                                                                      ref:"Exodus 23:12" },
+    { num:88,  text:"Not to do prohibited work on the seventh day.",                                                                    ref:"Exodus 20:10" },
+    { num:89,  text:"The court must not inflict punishment on the Sabbath.",                                                            ref:"Exodus 35:3" },
+    { num:90,  text:"Stay near home and within city bounds on the Sabbath.",                                                            ref:"Exodus 16:29" },
+    { num:91,  text:"To remember and sanctify the Sabbath by blessing wine and lighting the conclusionary candle.",                    ref:"Exodus 20:8" },
+    { num:92,  text:"To perform self-denial and to rest from exertion on Yom Kippur.",                                                  ref:"Leviticus 23:32" },
+    { num:93,  text:"Not to do prohibited labor.",                                                                                      ref:"Leviticus 23:31" },
+    { num:94,  text:"To afflict yourself.",                                                                                             ref:"Leviticus 16:29" },
+    { num:95,  text:"Not to eat or drink.",                                                                                             ref:"Leviticus 23:29" },
+    { num:96,  text:"To rest on the first day of Passover.",                                                                            ref:"Leviticus 23:8" },
+    { num:97,  text:"To do no work on the first day of Passover.",                                                                      ref:"Leviticus 23:8" },
+    { num:98,  text:"To rest on the seventh day of Passover.",                                                                          ref:"Leviticus 23:8" },
+    { num:99,  text:"To do no work on the seventh day of Passover.",                                                                    ref:"Leviticus 23:8" },
+    { num:100, text:"To rest on the first day of Pentecost.",                                                                           ref:"Leviticus 23:21" },
+    { num:101, text:"To do no work on the first day of Pentecost.",                                                                     ref:"Leviticus 23:21" },
+    { num:102, text:"To rest on the New Year (the first day of the seventh month).",                                                    ref:"Leviticus 23:24" },
+    { num:103, text:"To do no work on Rosh Hashana, the New Year.",                                                                     ref:"Leviticus 23:25" },
+    { num:104, text:"To rest on the first day of Sukkot, the Feast of Booths.",                                                         ref:"Leviticus 23:35" },
+    { num:105, text:"The first day of Sukkot, the Feast of Booths, is sacred. Do no work.",                                            ref:"Leviticus 23:35" },
+    { num:106, text:"To rest on the eighth day of the Feast of Booths, Shimini Atzeret.",                                               ref:"Leviticus 23:36" },
+    { num:107, text:"To do no work on the eighth day of the Feast of Booths.",                                                          ref:"Leviticus 23:36" },
+    { num:108, text:"To not eat leaven past noon on the day of Passover.",                                                              ref:"Deuteronomy 16:3" },
+    { num:109, text:"To destroy all leaven on Passover.",                                                                               ref:"Exodus 12:15" },
+    { num:110, text:"Not to eat leaven all seven days of Passover.",                                                                    ref:"Exodus 13:3" },
+    { num:111, text:"Not to eat anything containing leaven during Passover.",                                                           ref:"Exodus 12:20" },
+    { num:112, text:"No leaven shall be found in your domain during Passover.",                                                         ref:"Exodus 13:7" },
+    { num:113, text:"Not to find any leaven in your house all seven days of Passover.",                                                 ref:"Exodus 12:19" },
+    { num:114, text:"To eat matzoh on the first night of Passover.",                                                                    ref:"Exodus 12:18" },
+    { num:115, text:"On that night to explain the meaning of Passover.",                                                                ref:"Exodus 13:8" },
+    { num:116, text:"To hear the Shofar, the ram's horn trumpet, on the first day of Tishrei, the seventh month (Rosh Hashanah).",     ref:"Numbers 29:1" },
+    { num:117, text:"To dwell in a Sukka (booth) for the seven days of the festival.",                                                  ref:"Leviticus 23:42" },
+    { num:118, text:"To take up a Lulav (palm branch) and an Etrog (citron).",                                                          ref:"Leviticus 23:40" },
+    { num:119, text:"Families shall pay an annual half-shekel temple tax.",                                                             ref:"Exodus 30:13" },
+    { num:120, text:"The courts must calculate the day on which the new month begins.",                                                 ref:"Exodus 12:2" },
+    { num:121, text:"To afflict and cry out (blow the trumpets) before God in times of catastrophe.",                                   ref:"Numbers 10:9" },
+    { num:122, text:"A man should contractually marry a woman before living with her.",                                                 ref:"Deuteronomy 24:1" },
+    { num:123, text:"Not to have relations with women who are not acquired thus. (An Israelite man or woman cannot be a prostitute.)", ref:"Deuteronomy 23:18" },
+    { num:124, text:"Not to withhold food, clothing, and relations from your wife.",                                                    ref:"Exodus 21:10" },
+    { num:125, text:"To have children from her.",                                                                                       ref:"Genesis 1:28" },
+    { num:126, text:"A divorced wife must receive a written bill of divorce.",                                                          ref:"Deuteronomy 24:1" },
+    { num:127, text:"A man cannot remarry his divorced wife.",                                                                          ref:"Deuteronomy 24:4" },
+    { num:128, text:"To marry a childless brother's widow.",                                                                            ref:"Deuteronomy 25:5" },
+    { num:129, text:"To free a childless widow from the obligation to marry her brother-in-law.",                                       ref:"Deuteronomy 25:9" },
+    { num:130, text:"The widow must not remarry until the ties with her brother-in-law are removed.",                                   ref:"Deuteronomy 25:5" },
+    { num:131, text:"The court must fine one who seduces a maiden.",                                                                    ref:"Exodus 22:15-16" },
+    { num:132, text:"The rapist must marry the maiden.",                                                                                ref:"Deuteronomy 22:29" },
+    { num:133, text:"He must not divorce her.",                                                                                         ref:"Deuteronomy 22:29" },
+    { num:134, text:"The slanderer must remain married to his wife.",                                                                   ref:"Deuteronomy 22:19" },
+    { num:135, text:"He must not divorce her.",                                                                                         ref:"Deuteronomy 22:19" },
+    { num:136, text:"To take procedures against a suspected adulteress.",                                                               ref:"Numbers 5:30" },
+    { num:137, text:"A jealous husband must take his wife to the priests and not put oil on her meal offering.",                        ref:"Numbers 5:15" },
+    { num:138, text:"A suspected wife is to be accompanied by a meal offering that contains no frankincense.",                          ref:"Numbers 5:15" },
+    { num:139, text:"Not to have relations with your mother.",                                                                          ref:"Leviticus 18:7" },
+    { num:140, text:"Not to have relations with your father's wife.",                                                                   ref:"Leviticus 18:8" },
+    { num:141, text:"Not to have relations with your sister.",                                                                          ref:"Leviticus 18:9" },
+    { num:142, text:"Not to have relations with your father's wife's daughter.",                                                        ref:"Leviticus 18:11" },
+    { num:143, text:"Not to have relations with your son's daughter.",                                                                  ref:"Leviticus 18:10" },
+    { num:144, text:"Not to have relations with your daughter.",                                                                        ref:"Leviticus 18:10" },
+    { num:145, text:"Not to have relations with your daughter's daughter.",                                                             ref:"Leviticus 18:10" },
+    { num:146, text:"Not to marry a woman and her daughter.",                                                                           ref:"Leviticus 18:17" },
+    { num:147, text:"Not to marry a woman and her son's daughter.",                                                                     ref:"Leviticus 18:17" },
+    { num:148, text:"Not to marry a woman and her daughter's daughter.",                                                                ref:"Leviticus 18:17" },
+    { num:149, text:"Not to have relations with your father's sister.",                                                                 ref:"Leviticus 18:12" },
+    { num:150, text:"Not to have relations with your mother's sister.",                                                                 ref:"Leviticus 18:13" },
+    { num:151, text:"Not to have relations with your father's brother's wife (same father).",                                          ref:"Leviticus 18:14" },
+    { num:152, text:"Not to have relations with your son's wife.",                                                                      ref:"Leviticus 18:15" },
+    { num:153, text:"Not to have relations with your brother's wife (same father and/or mother).",                                     ref:"Leviticus 18:16" },
+    { num:154, text:"Not to have relations with your wife's sister.",                                                                   ref:"Leviticus 18:18" },
+    { num:155, text:"A man must not have relations with a beast.",                                                                      ref:"Leviticus 18:23" },
+    { num:156, text:"A woman must not have relations with a beast.",                                                                    ref:"Leviticus 18:23" },
+    { num:157, text:"Not to have homosexual relations.",                                                                                ref:"Leviticus 18:22" },
+    { num:158, text:"Not to have homosexual relations with your father.",                                                               ref:"Leviticus 18:7" },
+    { num:159, text:"Not to have homosexual relations with your father's brother.",                                                     ref:"Leviticus 18:14" },
+    { num:160, text:"Not to have relations with a married woman.",                                                                      ref:"Leviticus 18:20" },
+    { num:161, text:"Not to have relations with a menstrually unclean woman.",                                                          ref:"Leviticus 18:19" },
+    { num:162, text:"Not to marry Gentiles.",                                                                                           ref:"Deuteronomy 7:3" },
+    { num:163, text:"Not to let Moabite and Ammonite males marry into the Jewish people.",                                              ref:"Deuteronomy 23:4" },
+    { num:164, text:"Don't abhor or keep third-generation Edomite and Egyptian converts from marrying into the Jewish nation.",        ref:"Deuteronomy 23:8-9" },
+    { num:165, text:"Not to abhor or refrain from marrying a third-generation Edomite or Egyptian convert.",                           ref:"Deuteronomy 23:8-9" },
+    { num:166, text:"A bastard child cannot become an Israelite.",                                                                      ref:"Deuteronomy 23:3" },
+    { num:167, text:"A eunuch or sexually mutilated man may not enter into the community.",                                             ref:"Deuteronomy 23:2" },
+    { num:168, text:"Not to castrate any male (including animals).",                                                                    ref:"Leviticus 22:24" },
+    { num:169, text:"The High Priest must not marry a widow.",                                                                          ref:"Leviticus 21:14" },
+    { num:170, text:"The High Priest must not have relations with a widow.",                                                            ref:"Leviticus 21:14" },
+    { num:171, text:"The High Priest must marry a virgin.",                                                                             ref:"Leviticus 21:13" },
+    { num:172, text:"A priest must not marry a divorcee.",                                                                              ref:"Leviticus 21:7" },
+    { num:173, text:"A priest may not marry a prostitute.",                                                                             ref:"Leviticus 21:7" },
+    { num:174, text:"A priest must not marry a defiled woman.",                                                                         ref:"Leviticus 21:7" },
+    { num:175, text:"Not to have pleasurable physical contact with any forbidden woman.",                                               ref:"Leviticus 18:6" },
+    { num:176, text:"To examine animals that are permitted as food.",                                                                   ref:"Leviticus 11:2" },
+    { num:177, text:"To be careful to eat only clean birds.",                                                                           ref:"Deuteronomy 14:11" },
+    { num:178, text:"To distinguish which sea creatures are fit to eat.",                                                               ref:"Leviticus 11:9" },
+    { num:179, text:"To distinguish which winged insects may be eaten.",                                                                ref:"Leviticus 11:21" },
+    { num:180, text:"Not to eat unclean animals.",                                                                                      ref:"Leviticus 11:4" },
+    { num:181, text:"Not to eat forbidden birds.",                                                                                      ref:"Leviticus 11:13" },
+    { num:182, text:"Not to eat sea creatures without fins and scales.",                                                                ref:"Leviticus 11:11" },
+    { num:183, text:"Not to eat unclean flying insects.",                                                                               ref:"Deuteronomy 14:19" },
+    { num:184, text:"Small swarming insects and unclean creatures that crawl on land are forbidden as food.",                          ref:"Leviticus 11:41" },
+    { num:185, text:"Not to eat maggots.",                                                                                              ref:"Leviticus 11:44" },
+    { num:186, text:"Not to eat snakes, scorpions, and the worms found on the ground (after leaving the fruit).",                     ref:"Leviticus 11:42" },
+    { num:187, text:"Not to eat creatures that live in water, other than fish.",                                                        ref:"Leviticus 11:43" },
+    { num:188, text:"Not to eat of an animal that died without ritual slaughter.",                                                      ref:"Deuteronomy 14:21" },
+    { num:189, text:"Not to eat an ox that was condemned to be stoned.",                                                                ref:"Exodus 21:28" },
+    { num:190, text:"Not to eat meat of a mortally wounded animal.",                                                                    ref:"Exodus 22:30" },
+    { num:191, text:"Not to eat a limb torn off from a living creature.",                                                               ref:"Deuteronomy 12:23" },
+    { num:192, text:"Not to eat blood.",                                                                                                ref:"Leviticus 3:17" },
+    { num:193, text:"Not to eat the fat of some clean animals.",                                                                        ref:"Leviticus 3:17" },
+    { num:194, text:"Not to eat the thigh muscle.",                                                                                     ref:"Genesis 32:33" },
+    { num:195, text:"Not to eat milk and meat cooked together.",                                                                        ref:"Exodus 23:19" },
+    { num:196, text:"Not to cook milk and meat together.",                                                                              ref:"Exodus 34:26" },
+    { num:197, text:"Not to eat bread from the new grain harvest.",                                                                     ref:"Leviticus 23:14" },
+    { num:198, text:"Roasted grains must be offered before they are eaten.",                                                            ref:"Leviticus 23:14" },
+    { num:199, text:"Not to eat ripe grains from the new grain harvest before they are made as an offering.",                          ref:"Leviticus 23:14" },
+    { num:200, text:"Not to eat the fruit of a tree for the first three years.",                                                        ref:"Leviticus 19:23" },
+    { num:201, text:"At the risk of forfeiture, not to eat of diverse seeds planted in a vineyard.",                                   ref:"Deuteronomy 22:9" },
+    { num:202, text:"No one may eat produce for an offering, or untithed food.",                                                        ref:"Leviticus 22:15" },
+    { num:203, text:"Not to eat or drink anything offered as sacrifice to an idol.",                                                    ref:"Deuteronomy 32:38" },
+    { num:204, text:"To ritually slaughter an animal before eating it.",                                                                ref:"Deuteronomy 12:21" },
+    { num:205, text:"Not to slaughter an animal and its offspring on the same day.",                                                    ref:"Leviticus 22:28" },
+    { num:206, text:"The blood of a slaughtered wild animal must be covered with dirt.",                                                ref:"Leviticus 17:13" },
+    { num:207, text:"Not to take a nesting bird with her eggs and young.",                                                              ref:"Deuteronomy 22:6" },
+    { num:208, text:"To release the mother bird if you did not take her.",                                                              ref:"Deuteronomy 22:7" },
+    { num:209, text:"Not to swear falsely in God's Name.",                                                                              ref:"Leviticus 19:12" },
+    { num:210, text:"Not to take God's Name in vain.",                                                                                  ref:"Exodus 20:7" },
+    { num:211, text:"To not lie or deal falsely, or deny that something of value was left in your possession.",                        ref:"Leviticus 19:11" },
+    { num:212, text:"To not swear falsely.",                                                                                            ref:"Leviticus 19:11" },
+    { num:213, text:"To swear in God's Name only to confirm the truth, when deemed necessary by the courts.",                          ref:"Deuteronomy 10:20" },
+    { num:214, text:"To keep your promises and vows to God.",                                                                           ref:"Deuteronomy 23:24" },
+    { num:215, text:"Not to break oaths or vows.",                                                                                      ref:"Numbers 30:3" },
+    { num:216, text:"To have vows and oaths annulled according to law.",                                                                ref:"Numbers 30:3" },
+    { num:217, text:"The Nazirite must let his hair grow.",                                                                             ref:"Numbers 6:5" },
+    { num:218, text:"The Nazirite must not cut his hair.",                                                                              ref:"Numbers 6:5" },
+    { num:219, text:"The Nazirite must not drink wine, wine mixtures, or wine vinegar.",                                               ref:"Numbers 6:3" },
+    { num:220, text:"The Nazirite must not eat fresh grapes.",                                                                          ref:"Numbers 6:3" },
+    { num:221, text:"The Nazirite must not eat raisins or drink anything steeped in grapes.",                                          ref:"Numbers 6:3" },
+    { num:222, text:"The Nazirite must not eat grape seeds.",                                                                           ref:"Numbers 6:4" },
+    { num:223, text:"The Nazirite must not eat grape skins or grapes dried on the vine.",                                              ref:"Numbers 6:4" },
+    { num:224, text:"A Nazirite may not enter where there is a dead person.",                                                           ref:"Numbers 6:6" },
+    { num:225, text:"A Nazirite must not come in contact with the dead.",                                                               ref:"Numbers 6:7" },
+    { num:226, text:"A Nazirite must shave his head after the completion of his vowed service.",                                        ref:"Numbers 6:18" },
+    { num:227, text:"To estimate the value of persons for whom offerings are paid.",                                                    ref:"Leviticus 27:2" },
+    { num:228, text:"For priests to estimate the value of animal offerings.",                                                           ref:"Leviticus 27:12-13" },
+    { num:229, text:"For priests to estimate the value of consecrated houses.",                                                         ref:"Leviticus 27:14" },
+    { num:230, text:"To determine the redemption value of a vowed field.",                                                              ref:"Leviticus 27:16" },
+    { num:231, text:"Fulfill the procedures of vowed possessions.",                                                                     ref:"Leviticus 27:28" },
+    { num:232, text:"Not to sell vowed possessions.",                                                                                   ref:"Leviticus 27:28" },
+    { num:233, text:"Not to redeem any vowed possessions.",                                                                             ref:"Leviticus 27:28" },
+    { num:234, text:"Not to plant diverse seeds together.",                                                                             ref:"Leviticus 19:19" },
+    { num:235, text:"Not to plant grains or greens in a vineyard.",                                                                     ref:"Deuteronomy 22:9" },
+    { num:236, text:"Not to crossbreed animals.",                                                                                       ref:"Leviticus 19:19" },
+    { num:237, text:"Not to work different animals together.",                                                                          ref:"Deuteronomy 22:10" },
+    { num:238, text:"Not to wear cloth woven of both wool and linen.",                                                                  ref:"Deuteronomy 22:11" },
+    { num:239, text:"Not to reap your harvest to the edge of the field, but leave a corner uncut for the poor.",                      ref:"Leviticus 19:10" },
+    { num:240, text:"Not to reap that corner but to leave fruit and grain for the poor.",                                               ref:"Leviticus 19:9" },
+    { num:241, text:"To leave gleanings.",                                                                                              ref:"Leviticus 19:9" },
+    { num:242, text:"Not to gather the gleanings.",                                                                                     ref:"Leviticus 19:9" },
+    { num:243, text:"Not to pick your vineyard bare.",                                                                                  ref:"Leviticus 19:10" },
+    { num:244, text:"Not to gather the gleanings of a vineyard.",                                                                       ref:"Leviticus 19:10" },
+    { num:245, text:"To not gather the fallen fruit of the vineyard.",                                                                  ref:"Leviticus 19:10" },
+    { num:246, text:"Not to pick the unformed clusters of grapes.",                                                                     ref:"Leviticus 19:10" },
+    { num:247, text:"To leave forgotten sheaves in the field or leave a sheaf for the poor.",                                          ref:"Deuteronomy 24:19" },
+    { num:248, text:"Not to retrieve them but leave them for the widow, alien, and orphan.",                                           ref:"Deuteronomy 24:19" },
+    { num:249, text:"To separate the tithe for the poor.",                                                                              ref:"Deuteronomy 14:28" },
+    { num:250, text:"To give charity.",                                                                                                  ref:"Deuteronomy 15:11" },
+    { num:251, text:"Not to withhold charity from those in need.",                                                                      ref:"Deuteronomy 15:7" },
+    { num:252, text:"To set aside a tithed portion of the offerings for the priesthood.",                                               ref:"Deuteronomy 18:4" },
+    { num:253, text:"The Levite must be tithed on his tithe.",                                                                          ref:"Numbers 18:26" },
+    { num:254, text:"To not delay your agricultural offerings.",                                                                        ref:"Exodus 22:28" },
+    { num:255, text:"A layperson may not eat from a sacred donation.",                                                                  ref:"Leviticus 22:10" },
+    { num:256, text:"A servant of a priest may not eat from a sacred donation.",                                                        ref:"Leviticus 22:10" },
+    { num:257, text:"An uncircumcised priest may not eat from a sacred donation.",                                                      ref:"Exodus 12:48" },
+    { num:258, text:"A priest in a state of impurity may not eat from a sacred donation.",                                             ref:"Leviticus 22:4" },
+    { num:259, text:"A priest's daughter married to a layman may not eat from a sacred donation.",                                     ref:"Leviticus 22:12" },
+    { num:260, text:"Levites are to receive earmarked tithes each planting year.",                                                      ref:"Numbers 18:24" },
+    { num:261, text:"To set aside the Second Tithe.",                                                                                   ref:"Deuteronomy 14:22" },
+    { num:262, text:"Not to spend its redemption value on anything other than food, drink, or ointment.",                              ref:"Deuteronomy 26:14" },
+    { num:263, text:"Not to eat from the Tithe while unclean.",                                                                         ref:"Deuteronomy 26:14" },
+    { num:264, text:"A mourner must not eat the Second Tithe on the first day of mourning.",                                           ref:"Deuteronomy 26:14" },
+    { num:265, text:"Not to eat grains from the Second Tithe outside Jerusalem.",                                                       ref:"Deuteronomy 12:17" },
+    { num:266, text:"Not to consume Second-Tithe wine products outside Jerusalem.",                                                     ref:"Deuteronomy 12:17" },
+    { num:267, text:"Not to consume Second-Tithe oil outside Jerusalem.",                                                               ref:"Deuteronomy 12:17" },
+    { num:268, text:"The fourth-year crops must be totally for holy purposes.",                                                         ref:"Leviticus 19:24" },
+    { num:269, text:"To read the confession of tithes every fourth and seventh years.",                                                 ref:"Deuteronomy 26:13" },
+    { num:270, text:"To bring the first fruits into the temple.",                                                                       ref:"Exodus 23:19" },
+    { num:271, text:"The priests must not eat the first fruits outside Jerusalem.",                                                     ref:"Deuteronomy 12:17" },
+    { num:272, text:"To read the Torah portion pertaining to their presentation.",                                                      ref:"Deuteronomy 26:5" },
+    { num:273, text:"When baking, set aside some dough for the priesthood.",                                                            ref:"Numbers 15:20" },
+    { num:274, text:"To give the shoulder, two cheeks, and the stomach of a sacrificed animal to the priesthood.",                     ref:"Deuteronomy 18:3" },
+    { num:275, text:"To give the first shearing of sheep to the priesthood.",                                                           ref:"Deuteronomy 18:4" },
+    { num:276, text:"A father must redeem the firstborn son and give the money to the priesthood.",                                    ref:"Numbers 18:15" },
+    { num:277, text:"To redeem each firstborn donkey with a lamb given to the priesthood.",                                             ref:"Exodus 13:13" },
+    { num:278, text:"To break the neck of the firstborn donkey if the owner doesn't redeem it.",                                       ref:"Exodus 13:13" },
+    { num:279, text:"To rest the land during the seventh year and do no work, to allow for the rejuvenation of the earth.",            ref:"Exodus 34:21" },
+    { num:280, text:"Not to work the land during the seventh year.",                                                                    ref:"Leviticus 25:4" },
+    { num:281, text:"Not to work with trees (to produce fruit) during the seventh year.",                                              ref:"Leviticus 25:4" },
+    { num:282, text:"Not to harvest wild crops in the seventh year.",                                                                   ref:"Leviticus 25:5" },
+    { num:283, text:"Not to systematically pick fruit in the seventh year.",                                                            ref:"Leviticus 25:5" },
+    { num:284, text:"To leave untouched all produce that grew in the seventh year.",                                                    ref:"Exodus 23:11" },
+    { num:285, text:"To relax all loans in the seventh year.",                                                                          ref:"Deuteronomy 15:3" },
+    { num:286, text:"Not to pressure the debtor in the seventh year.",                                                                  ref:"Deuteronomy 15:2" },
+    { num:287, text:"Not to refrain from lending in the year of remission for fear of monetary loss.",                                 ref:"Deuteronomy 15:9" },
+    { num:288, text:"The court must count and determine the year of the Jubilee.",                                                      ref:"Leviticus 25:8" },
+    { num:289, text:"The court must sanctify the fiftieth year.",                                                                       ref:"Leviticus 25:10" },
+    { num:290, text:"To sound the ram's horn on Yom Kippur of the Jubilee year, to free the slaves.",                                  ref:"Leviticus 25:9" },
+    { num:291, text:"Not to work the land during the fiftieth year.",                                                                   ref:"Leviticus 25:11" },
+    { num:292, text:"Not to reap or harvest in the fiftieth year.",                                                                     ref:"Leviticus 25:11" },
+    { num:293, text:"Not to pick grapes in the usual way and to eat only directly from the vine in the fiftieth year.",                ref:"Leviticus 25:11" },
+    { num:294, text:"Follow the laws of sold and family properties.",                                                                   ref:"Leviticus 25:24" },
+    { num:295, text:"Not to sell land (in Israel) in perpetuity.",                                                                      ref:"Leviticus 25:23" },
+    { num:296, text:"To follow the laws pertaining to houses in walled cities.",                                                        ref:"Leviticus 25:29" },
+    { num:297, text:"The Levites have no inheritance or allotment but will live in cities.",                                           ref:"Deuteronomy 18:2" },
+    { num:298, text:"Levites will not partake in the spoils of war.",                                                                   ref:"Deuteronomy 18:1" },
+    { num:299, text:"Levites are to be given cities and the surrounding fields.",                                                       ref:"Numbers 35:2" },
+    { num:300, text:"Not to sell the fields of the Levites, which will remain their possession before and after the Jubilee year.",    ref:"Leviticus 25:34" },
+    { num:301, text:"To build a Sanctuary.",                                                                                            ref:"Exodus 25:8" },
+    { num:302, text:"Not to build the altar with stones hewn by metal.",                                                                ref:"Exodus 20:22" },
+    { num:303, text:"Not to climb steps to the altar.",                                                                                 ref:"Exodus 20:23" },
+    { num:304, text:"To show reverence for the temple.",                                                                                ref:"Leviticus 19:30" },
+    { num:305, text:"Levites shall guard the temple area.",                                                                             ref:"Numbers 18:3" },
+    { num:306, text:"Not to leave the temple unguarded.",                                                                               ref:"Numbers 18:5" },
+    { num:307, text:"To blend the anointing oil.",                                                                                      ref:"Exodus 30:31" },
+    { num:308, text:"Not to duplicate the formula for the anointing oil.",                                                              ref:"Exodus 30:32" },
+    { num:309, text:"Not to anoint anyone who isn't a priest or a king with it.",                                                       ref:"Exodus 30:32" },
+    { num:310, text:"Not to replicate the incense formula.",                                                                            ref:"Exodus 30:37" },
+    { num:311, text:"Not to burn anything on the altar besides incense.",                                                               ref:"Exodus 30:9" },
+    { num:312, text:"The Levites carry the ark on their shoulders.",                                                                    ref:"Numbers 7:9" },
+    { num:313, text:"Not to remove the poles from the ark.",                                                                            ref:"Exodus 25:15" },
+    { num:314, text:"The Levites must work in the temple.",                                                                             ref:"Numbers 18:23" },
+    { num:315, text:"There are specified duties for the Levites.",                                                                      ref:"Numbers 18:3" },
+    { num:316, text:"The priest will be dedicated and must be treated as sacred.",                                                      ref:"Leviticus 21:8" },
+    { num:317, text:"The priestly work shifts must be equal during holidays.",                                                          ref:"Deuteronomy 18:6-8" },
+    { num:318, text:"The priests must wear their priestly garments during the service.",                                               ref:"Exodus 28:2" },
+    { num:319, text:"The priestly garments must not be torn.",                                                                          ref:"Exodus 28:32" },
+    { num:320, text:"The breastplate must not be loosened from the ephod.",                                                             ref:"Exodus 28:28" },
+    { num:321, text:"A priest must not enter the temple when drunk.",                                                                   ref:"Leviticus 10:9" },
+    { num:322, text:"A priest must not enter the temple with unkempt hair.",                                                            ref:"Leviticus 10:6" },
+    { num:323, text:"A priest must not enter the temple with torn clothes.",                                                            ref:"Leviticus 10:6" },
+    { num:324, text:"A priest must not enter the sanctuary for no reason.",                                                             ref:"Leviticus 16:2" },
+    { num:325, text:"A priest must not leave the temple during the service.",                                                           ref:"Leviticus 10:7" },
+    { num:326, text:"To send the impure from the temple.",                                                                              ref:"Numbers 5:2" },
+    { num:327, text:"Impure persons must not enter the temple.",                                                                        ref:"Numbers 5:3" },
+    { num:328, text:"Unclean persons must not enter the Temple Mount area.",                                                            ref:"Deuteronomy 23:11" },
+    { num:329, text:"Unclean priests cannot do temple service.",                                                                        ref:"Leviticus 22:2" },
+    { num:330, text:"An impure priest, after immersion, must not return to service until after sundown.",                              ref:"Leviticus 21:6" },
+    { num:331, text:"A priest must wash his hands and feet before ministering.",                                                        ref:"Exodus 30:19" },
+    { num:332, text:"A blemished priest must not enter the temple.",                                                                    ref:"Leviticus 21:23" },
+    { num:333, text:"A blemished priest must not serve.",                                                                               ref:"Leviticus 21:17" },
+    { num:334, text:"A temporarily blemished priest must not serve.",                                                                   ref:"Leviticus 21:18" },
+    { num:335, text:"A non-priest must not serve.",                                                                                     ref:"Numbers 18:4" },
+    { num:336, text:"Blemished animals are unacceptable as offerings.",                                                                 ref:"Leviticus 22:21" },
+    { num:337, text:"Not to dedicate a blemished animal for the altar.",                                                                ref:"Leviticus 22:20" },
+    { num:338, text:"An animal with a discharge must not be slaughtered.",                                                              ref:"Leviticus 22:22" },
+    { num:339, text:"Not to sprinkle the blood of a disabled animal.",                                                                  ref:"Leviticus 22:24" },
+    { num:340, text:"Not to burn the fat of a defective animal.",                                                                       ref:"Leviticus 22:22" },
+    { num:341, text:"Not to offer an animal with a temporary blemish.",                                                                 ref:"Deuteronomy 17:1" },
+    { num:342, text:"Not to accept defective offerings even from foreigners.",                                                          ref:"Leviticus 22:25" },
+    { num:343, text:"Not to inflict wounds or commit damage upon dedicated animals.",                                                   ref:"Leviticus 22:21" },
+    { num:344, text:"To redeem disqualified dedicated animals.",                                                                        ref:"Deuteronomy 12:15" },
+    { num:345, text:"To offer animals that are at least eight days old.",                                                               ref:"Leviticus 22:27" },
+    { num:346, text:"Not to offer animals purchased with the fees of a harlot or an animal exchanged for a dog.",                     ref:"Deuteronomy 23:19" },
+    { num:347, text:"Not to burn yeast or honey on the altar.",                                                                         ref:"Leviticus 2:11" },
+    { num:348, text:"To salt all sacrifices.",                                                                                          ref:"Leviticus 2:13" },
+    { num:349, text:"Not to omit the salt from grain offerings.",                                                                       ref:"Leviticus 2:13" },
+    { num:350, text:"To follow the burnt offering procedures as written in the Torah.",                                                 ref:"Leviticus 1:3" },
+    { num:351, text:"Not to eat the meat of a burnt offering.",                                                                         ref:"Deuteronomy 12:17" },
+    { num:352, text:"To carry out the procedure for a sin offering.",                                                                   ref:"Leviticus 6:18" },
+    { num:353, text:"Not to eat the meat of a sin offering.",                                                                           ref:"Leviticus 6:23" },
+    { num:354, text:"The priest shall not cut off the head of a bird (sin) offering.",                                                  ref:"Leviticus 5:8" },
+    { num:355, text:"To follow the procedures of the guilt offering.",                                                                  ref:"Leviticus 7:1" },
+    { num:356, text:"The priests must eat the sacrificed meat in the temple.",                                                          ref:"Exodus 29:33" },
+    { num:357, text:"Priests must not eat the meat outside the temple.",                                                                ref:"Deuteronomy 12:17" },
+    { num:358, text:"A non-priest must not eat the sacrificial meat.",                                                                  ref:"Exodus 29:33" },
+    { num:359, text:"To follow the procedure of the peace offering.",                                                                   ref:"Leviticus 7:11" },
+    { num:360, text:"Not to eat the meat of minor sacrifices before sprinkling the blood.",                                            ref:"Deuteronomy 12:17" },
+    { num:361, text:"To bring meal offerings in the prescribed manner.",                                                                ref:"Leviticus 2:1" },
+    { num:362, text:"Not to put oil on the meal offerings of wrongdoers.",                                                              ref:"Leviticus 5:11" },
+    { num:363, text:"Not to put frankincense on the meal offerings of wrongdoers.",                                                     ref:"Leviticus 5:11" },
+    { num:364, text:"Not to eat the cereal offering of the high priest.",                                                               ref:"Leviticus 6:16" },
+    { num:365, text:"Not to bake meal offerings with leaven.",                                                                          ref:"Leviticus 6:10" },
+    { num:366, text:"The priests must eat the remains of the meal offerings.",                                                          ref:"Leviticus 6:9" },
+    { num:367, text:"To bring all freewill offerings to the temple and rejoice.",                                                       ref:"Deuteronomy 12:5-6" },
+    { num:368, text:"Not to withhold payment which fulfills a vow to God.",                                                             ref:"Deuteronomy 23:22" },
+    { num:369, text:"To offer all sacrifices in the temple.",                                                                           ref:"Deuteronomy 12:11" },
+    { num:370, text:"To bring all votive offerings to the temple.",                                                                     ref:"Deuteronomy 12:26" },
+    { num:371, text:"Not to slaughter sacrifices outside the courtyard of the temple.",                                                 ref:"Leviticus 17:4" },
+    { num:372, text:"Not to offer any sacrifices outside the courtyard of the temple.",                                                 ref:"Deuteronomy 12:13" },
+    { num:373, text:"To offer two lambs every day.",                                                                                    ref:"Numbers 28:3" },
+    { num:374, text:"To light a fire on the altar every day.",                                                                          ref:"Leviticus 6:5" },
+    { num:375, text:"Not to extinguish this fire.",                                                                                     ref:"Leviticus 6:5" },
+    { num:376, text:"To remove the ashes from the altar every day.",                                                                    ref:"Leviticus 6:3" },
+    { num:377, text:"To burn incense every day.",                                                                                       ref:"Exodus 30:7" },
+    { num:378, text:"To keep the light burning every day (in the candelabra).",                                                         ref:"Exodus 27:21" },
+    { num:379, text:"The High Priest must bring a meal offering every day.",                                                            ref:"Leviticus 6:13" },
+    { num:380, text:"To bring two additional lambs as burnt offerings on the Sabbath.",                                                 ref:"Numbers 28:9" },
+    { num:381, text:"To make and present the showbread.",                                                                               ref:"Exodus 25:30" },
+    { num:382, text:"To bring additional offerings of the new moon.",                                                                   ref:"Numbers 28:11" },
+    { num:383, text:"To bring additional offerings on Passover.",                                                                       ref:"Numbers 28:19" },
+    { num:384, text:"To bring a wave offering from the meal of the new wheat.",                                                         ref:"Leviticus 23:10" },
+    { num:385, text:"To count the seven weeks from the new wheat offering to Pentecost (Shavuot).",                                    ref:"Leviticus 23:15" },
+    { num:386, text:"To bring an additional offering on Shavuot (Pentecost).",                                                          ref:"Numbers 28:26" },
+    { num:387, text:"To offer two loaves, which must accompany the above sacrifices.",                                                  ref:"Leviticus 23:18" },
+    { num:388, text:"To bring additional offerings on Rosh Hashana, the New Year.",                                                     ref:"Numbers 29:2" },
+    { num:389, text:"To bring additional offerings on Yom Kippur, the Day of Atonement.",                                              ref:"Numbers 29:8" },
+    { num:390, text:"To bring additional offerings on Sukkot, the Feast of Booths.",                                                   ref:"Numbers 29:13" },
+    { num:391, text:"To bring additional offerings on Shmini Atzeret, the eighth day of the Feast of Booths.",                        ref:"Numbers 29:35" },
+    { num:392, text:"Not to eat any unfit sacrifices.",                                                                                 ref:"Deuteronomy 14:3" },
+    { num:393, text:"Not to eat sacrifices offered with improper intentions.",                                                          ref:"Leviticus 7:18" },
+    { num:394, text:"To eat the Thanksgiving sacrifice on the day it was sacrificed.",                                                  ref:"Leviticus 22:30" },
+    { num:395, text:"Not to eat leftover sacrifices.",                                                                                  ref:"Leviticus 19:8" },
+    { num:396, text:"Not to eat from sacrifices that have become impure.",                                                              ref:"Leviticus 7:19" },
+    { num:397, text:"An unclean person cannot eat from sacrifices.",                                                                    ref:"Leviticus 7:20" },
+    { num:398, text:"Sacrificial remains must be burned on the third day.",                                                             ref:"Leviticus 7:17" },
+    { num:399, text:"Impure sacrifices must be burnt.",                                                                                 ref:"Leviticus 7:19" },
+    { num:400, text:"To follow the priestly rituals of Yom Kippur.",                                                                    ref:"Leviticus 16:3" },
+    { num:401, text:"One who uses sacred property for personal use incurs a special penalty and sacrifice.",                           ref:"Leviticus 5:16" },
+    { num:402, text:"Not to work consecrated animals.",                                                                                 ref:"Deuteronomy 15:19" },
+    { num:403, text:"Not to shear the fleece of consecrated animals.",                                                                  ref:"Deuteronomy 15:19" },
+    { num:404, text:"To slaughter the Paschal sacrifice at the specified time.",                                                        ref:"Exodus 12:6" },
+    { num:405, text:"Not to slaughter the Paschal sacrifice while possessing leaven.",                                                  ref:"Exodus 23:18" },
+    { num:406, text:"Not to leave the fat overnight.",                                                                                  ref:"Exodus 23:18" },
+    { num:407, text:"To slaughter the second Paschal Lamb.",                                                                            ref:"Numbers 9:11" },
+    { num:408, text:"The Paschal Lamb is to be eaten with matzoh on the night it was slaughtered.",                                    ref:"Exodus 12:8" },
+    { num:409, text:"To eat the second Paschal Lamb on the night of the fifteenth of Iyar.",                                           ref:"Numbers 9:11" },
+    { num:410, text:"To roast the Paschal Lamb and not eat it raw or boiled.",                                                          ref:"Exodus 12:9" },
+    { num:411, text:"No part of the Paschal Lamb may be removed from the house.",                                                       ref:"Exodus 12:46" },
+    { num:412, text:"An apostate must not eat from the Paschal Lamb.",                                                                  ref:"Exodus 12:43" },
+    { num:413, text:"A hired servant or traveler must not eat from the Paschal Lamb.",                                                  ref:"Exodus 12:45" },
+    { num:414, text:"An uncircumcised male must not eat from the Paschal Lamb.",                                                        ref:"Exodus 12:48" },
+    { num:415, text:"No bone of the Paschal Lamb shall be broken.",                                                                     ref:"Exodus 12:46" },
+    { num:416, text:"Not to break any bones from the second Paschal offering.",                                                         ref:"Numbers 9:12" },
+    { num:417, text:"Not to leave any of the Lamb over until morning.",                                                                 ref:"Exodus 12:10" },
+    { num:418, text:"Not to leave the second Paschal meat until morning.",                                                              ref:"Numbers 9:12" },
+    { num:419, text:"Eat the Passover meat entirely on the night it is offered.",                                                       ref:"Deuteronomy 16:4" },
+    { num:420, text:"To be seen at the temple three times a year—Passover, Shavuot, the Festival of Weeks; and Sukkot, the Festival of Booths.", ref:"Deuteronomy 16:16" },
+    { num:421, text:"To celebrate and bring a peace offering in pilgrimage on these three festivals.",                                  ref:"Exodus 23:14" },
+    { num:422, text:"To rejoice on these three festivals.",                                                                             ref:"Deuteronomy 16:14" },
+    { num:423, text:"Not to appear at the temple for annual festivals without offerings.",                                              ref:"Deuteronomy 16:16" },
+    { num:424, text:"Not to refrain from rejoicing with and giving gifts to the Levites.",                                             ref:"Deuteronomy 12:19" },
+    { num:425, text:"Every seven years, on Sukkot, the Feast of Booths, to assemble all the people and read the law.",                ref:"Deuteronomy 31:12" },
+    { num:426, text:"To consecrate to God the firstborn of man and beast.",                                                             ref:"Exodus 13:12" },
+    { num:427, text:"The priests must not eat of the unblemished firstborn animals outside Jerusalem.",                                ref:"Deuteronomy 12:17" },
+    { num:428, text:"The firstborn of clean animals cannot be redeemed.",                                                               ref:"Numbers 18:17" },
+    { num:429, text:"Separate the tithe from the animals.",                                                                             ref:"Leviticus 27:32" },
+    { num:430, text:"Do not exchange a good animal for a bad for the tithe.",                                                           ref:"Leviticus 27:33" },
+    { num:431, text:"Every person must bring a sin offering for his transgression.",                                                    ref:"Leviticus 4:27" },
+    { num:432, text:"An unintentional sin requires a sin offering when discovered.",                                                    ref:"Leviticus 5:17-18" },
+    { num:433, text:"A guilt offering is required when one deals deceitfully.",                                                         ref:"Leviticus 5:25" },
+    { num:434, text:"For certain sins a wealthy person will offer an animal and the poor will offer doves, pigeons, or meal as prescribed.", ref:"Leviticus 5:7-11" },
+    { num:435, text:"The court must bring an offering when it rules in error or when the community sins.",                             ref:"Leviticus 4:13" },
+    { num:436, text:"A woman with an irregular discharge must bring an offering after she goes to the ritual bath.",                   ref:"Leviticus 15:28-29" },
+    { num:437, text:"A woman who gives birth must bring an offering after she immerses in the ritual bath.",                           ref:"Leviticus 12:6" },
+    { num:438, text:"A man who is cured of a chronic discharge must bring an offering after immersing in the ritual bath.",            ref:"Leviticus 15:13-14" },
+    { num:439, text:"One who is cured of a skin disease must bring an offering after immersing in the ritual bath.",                   ref:"Leviticus 14:10" },
+    { num:440, text:"Not to substitute another beast for one scheduled for sacrifice.",                                                 ref:"Leviticus 27:10" },
+    { num:441, text:"The new animal, along with the substituted one, retains consecration.",                                           ref:"Leviticus 27:10" },
+    { num:442, text:"Not to change consecrated animals (from one type of offering to another).",                                       ref:"Leviticus 27:26" },
+    { num:443, text:"Everyone under a roof with a corpse is unclean.",                                                                  ref:"Numbers 19:14" },
+    { num:444, text:"Carry out the procedure of the Red Heifer.",                                                                       ref:"Numbers 19:9" },
+    { num:445, text:"A clean person sprinkles water on those who are unclean.",                                                         ref:"Numbers 19:21" },
+    { num:446, text:"The priest's role is governed by the law when dealing with matters of skin disease.",                             ref:"Leviticus 13:12" },
+    { num:447, text:"The afflicted must not remove the signs of impurity.",                                                             ref:"Deuteronomy 24:8" },
+    { num:448, text:"The afflicted must not shave signs of impurity in his hair.",                                                      ref:"Leviticus 13:33" },
+    { num:449, text:"A skin-diseased person will tear his clothes, grow his hair long, and cry out, 'unclean, unclean.'",             ref:"Leviticus 13:45" },
+    { num:450, text:"Carry out the procedure for purifying the person with skin disease.",                                              ref:"Leviticus 14:2" },
+    { num:451, text:"The diseased person must shave off all his hair prior to purification.",                                          ref:"Leviticus 14:9" },
+    { num:452, text:"To discover when a leprous infection is on a garment.",                                                            ref:"Leviticus 13:47" },
+    { num:453, text:"To discover when a house is infected by a skin disease.",                                                          ref:"Leviticus 14:35" },
+    { num:454, text:"To observe the laws of menstrual impurity.",                                                                       ref:"Leviticus 15:19" },
+    { num:455, text:"To observe the laws of impurity caused by childbirth.",                                                            ref:"Leviticus 12:2" },
+    { num:456, text:"To observe the laws of impurity caused by an irregular discharge.",                                               ref:"Leviticus 15:25" },
+    { num:457, text:"To observe the laws of impurity caused by a man's chronic discharge.",                                            ref:"Leviticus 15:3" },
+    { num:458, text:"To observe the laws of impurity caused by contact with a dead animal.",                                           ref:"Leviticus 11:39" },
+    { num:459, text:"To observe the laws of impurity caused by contact with the eight (named) swarming creatures.",                   ref:"Leviticus 11:29" },
+    { num:460, text:"Observe the laws of impurity of a seminal emission.",                                                              ref:"Leviticus 15:16" },
+    { num:461, text:"Observe the laws of impurity concerning liquid and solid foods.",                                                  ref:"Leviticus 11:34" },
+    { num:462, text:"Every impure person must immerse himself in a ritual bath to become pure.",                                        ref:"Leviticus 15:16" },
+    { num:463, text:"The court must judge the damages incurred by a goring ox.",                                                        ref:"Exodus 21:28" },
+    { num:464, text:"The court must judge the damages incurred by an animal eating in another's field.",                               ref:"Exodus 22:4" },
+    { num:465, text:"The court must judge the damages incurred by an open pit.",                                                        ref:"Exodus 21:33" },
+    { num:466, text:"The court must judge the damages incurred by fire.",                                                               ref:"Exodus 22:5" },
+    { num:467, text:"Not to steal money stealthily.",                                                                                   ref:"Leviticus 19:11" },
+    { num:468, text:"The court must implement punitive measures against the thief.",                                                    ref:"Exodus 21:37" },
+    { num:469, text:"Each individual must ensure that his scales and weights are accurate.",                                            ref:"Leviticus 19:36" },
+    { num:470, text:"Not to commit injustice with scales and weights.",                                                                 ref:"Leviticus 19:35" },
+    { num:471, text:"Not to possess inaccurate weights and scales even if they are not for use.",                                      ref:"Deuteronomy 25:13" },
+    { num:472, text:"Not to move a boundary marker to steal someone's property.",                                                       ref:"Deuteronomy 19:14" },
+    { num:473, text:"Not to kidnap.",                                                                                                   ref:"Exodus 20:13" },
+    { num:474, text:"Not to rob openly.",                                                                                               ref:"Leviticus 19:13" },
+    { num:475, text:"Not to withhold wages or fail to repay a debt.",                                                                   ref:"Leviticus 19:13" },
+    { num:476, text:"Not to covet and scheme to acquire another's possession.",                                                         ref:"Exodus 20:14" },
+    { num:477, text:"Not to desire another's possession.",                                                                              ref:"Deuteronomy 5:18" },
+    { num:478, text:"Return the robbed object or its value.",                                                                           ref:"Leviticus 5:23" },
+    { num:479, text:"Not to ignore a lost object.",                                                                                     ref:"Deuteronomy 22:3" },
+    { num:480, text:"Return the lost object.",                                                                                          ref:"Deuteronomy 22:1" },
+    { num:481, text:"The court must implement laws against one who assaults another or damages another's property.",                   ref:"Exodus 21:18" },
+    { num:482, text:"Not to murder.",                                                                                                   ref:"Exodus 20:13" },
+    { num:483, text:"Not to accept money to save a convicted murderer.",                                                                ref:"Numbers 35:31" },
+    { num:484, text:"The court must send the accidental murderer to a city of refuge.",                                                 ref:"Numbers 35:25" },
+    { num:485, text:"Not to accept monetary restitution instead of sending the accidental murderer to, or releasing him from, a city of refuge.", ref:"Numbers 35:32" },
+    { num:486, text:"Not to kill the murderer before he stands trial.",                                                                 ref:"Numbers 35:12" },
+    { num:487, text:"To save someone being pursued even by taking the life of the pursuer.",                                           ref:"Deuteronomy 25:12" },
+    { num:488, text:"Not to pity the pursuer.",                                                                                         ref:"Numbers 35:12" },
+    { num:489, text:"Not to stand idly by if someone's life is in danger.",                                                             ref:"Leviticus 19:16" },
+    { num:490, text:"Designate refuge cities and prepare routes of access.",                                                            ref:"Deuteronomy 19:3" },
+    { num:491, text:"When a murdered person is found in open country and the murder is unsolved, break the neck of a calf by the river valley.", ref:"Deuteronomy 21:4" },
+    { num:492, text:"Not to work that river valley or plant there.",                                                                    ref:"Deuteronomy 21:4" },
+    { num:493, text:"Not to allow pitfalls and obstacles to remain on your property.",                                                  ref:"Deuteronomy 22:8" },
+    { num:494, text:"Make a guardrail around flat roofs.",                                                                              ref:"Deuteronomy 22:8" },
+    { num:495, text:"Not to put a stumbling block before the blind.",                                                                   ref:"Leviticus 19:14" },
+    { num:496, text:"Help another remove the load from a beast that can no longer carry it.",                                          ref:"Exodus 23:5" },
+    { num:497, text:"Help others load their beasts.",                                                                                   ref:"Deuteronomy 22:4" },
+    { num:498, text:"Not to leave fallen beasts distraught with their burdens but help to load or unload.",                           ref:"Deuteronomy 22:4" },
+    { num:499, text:"Buy and sell according to Torah law.",                                                                             ref:"Leviticus 25:14" },
+    { num:500, text:"Not to overcharge or underpay for an article.",                                                                    ref:"Leviticus 25:14" },
+    { num:501, text:"Not to insult or harm anybody with words.",                                                                        ref:"Leviticus 25:17" },
+    { num:502, text:"Not to cheat a sincere convert monetarily.",                                                                       ref:"Exodus 22:20" },
+    { num:503, text:"Not to insult or harm a sincere convert with words.",                                                              ref:"Exodus 22:20" },
+    { num:504, text:"A Hebrew slave shall be released after six years.",                                                                ref:"Exodus 21:2" },
+    { num:505, text:"Not to sell him as a slave is sold.",                                                                              ref:"Leviticus 25:42" },
+    { num:506, text:"Not to work the slave oppressively.",                                                                              ref:"Leviticus 25:43" },
+    { num:507, text:"Not to allow a foreigner to work the slave oppressively.",                                                         ref:"Leviticus 25:53" },
+    { num:508, text:"Not to have the kinsman slave do menial slave labor.",                                                             ref:"Leviticus 25:39" },
+    { num:509, text:"Give the slave gifts when he goes free.",                                                                          ref:"Deuteronomy 15:14" },
+    { num:510, text:"Not to send the freed slave away empty-handed.",                                                                   ref:"Deuteronomy 15:13" },
+    { num:511, text:"Redeem Jewish maidservants.",                                                                                      ref:"Exodus 21:8" },
+    { num:512, text:"Betroth the Jewish maidservant.",                                                                                  ref:"Exodus 21:8" },
+    { num:513, text:"The master cannot resell a female servant.",                                                                       ref:"Exodus 21:8" },
+    { num:514, text:"Canaanite slaves must work forever unless injured in one of their limbs.",                                        ref:"Leviticus 25:46" },
+    { num:515, text:"Not to extradite a slave who fled to (Biblical) Israel.",                                                          ref:"Deuteronomy 23:16" },
+    { num:516, text:"Not to wrong a slave who has come to Israel for refuge.",                                                          ref:"Deuteronomy 23:17" },
+    { num:517, text:"The courts must carry out the laws of a hired worker and hired guard.",                                           ref:"Exodus 22:9" },
+    { num:518, text:"Pay wages on the day they were earned.",                                                                           ref:"Deuteronomy 24:15" },
+    { num:519, text:"Do not delay payment of wages past the agreed time.",                                                              ref:"Leviticus 19:13" },
+    { num:520, text:"The hired worker may eat from the unharvested crops where he works.",                                             ref:"Deuteronomy 23:25" },
+    { num:521, text:"The worker must not eat while on hired time.",                                                                     ref:"Deuteronomy 23:26" },
+    { num:522, text:"The worker must not take more than he can eat.",                                                                   ref:"Deuteronomy 23:25" },
+    { num:523, text:"Not to muzzle an ox while plowing.",                                                                               ref:"Deuteronomy 25:4" },
+    { num:524, text:"The courts must carry out the laws of a borrower.",                                                                ref:"Exodus 22:13" },
+    { num:525, text:"The courts must carry out the laws of the unpaid guard.",                                                          ref:"Exodus 22:6" },
+    { num:526, text:"Lend without interest to the poor.",                                                                               ref:"Exodus 22:24" },
+    { num:527, text:"Not to press the poor for repayment.",                                                                             ref:"Exodus 22:24" },
+    { num:528, text:"Press the idolater for payment.",                                                                                  ref:"Deuteronomy 15:3" },
+    { num:529, text:"The creditor must not forcibly take collateral.",                                                                  ref:"Deuteronomy 24:10" },
+    { num:530, text:"Return the collateral to the debtor when it is needed.",                                                           ref:"Deuteronomy 24:13" },
+    { num:531, text:"Not to delay returning the collateral when it is needed.",                                                         ref:"Deuteronomy 24:12" },
+    { num:532, text:"Not to demand collateral from a widow.",                                                                           ref:"Deuteronomy 24:17" },
+    { num:533, text:"Not to demand as collateral utensils needed for preparing food.",                                                  ref:"Deuteronomy 24:6" },
+    { num:534, text:"Not to lend with interest within the community.",                                                                  ref:"Leviticus 25:37" },
+    { num:535, text:"Not to borrow with interest. (Because it would cause the lender to sin)",                                         ref:"Deuteronomy 23:20" },
+    { num:536, text:"Not to play any role in an interest loan.",                                                                        ref:"Exodus 22:25" },
+    { num:537, text:"Lend to, and borrow from, idolaters at interest.",                                                                 ref:"Deuteronomy 23:21" },
+    { num:538, text:"The court must carry out the laws of the plaintiff, admitter or denier.",                                         ref:"Exodus 22:8" },
+    { num:539, text:"Carry out the laws of the order of inheritance.",                                                                  ref:"Numbers 27:8" },
+    { num:540, text:"Appoint judges.",                                                                                                  ref:"Deuteronomy 16:18" },
+    { num:541, text:"Not to appoint judges who are not familiar with judicial procedure.",                                             ref:"Deuteronomy 1:17" },
+    { num:542, text:"Decide by majority in case of disagreement.",                                                                      ref:"Exodus 23:2" },
+    { num:543, text:"The court must not execute through a majority of one, but at least a majority of two is required.",               ref:"Exodus 23:2" },
+    { num:544, text:"A judge who presents a case for acquittal must not present an argument for conviction in capital cases.",         ref:"Exodus 23:2" },
+    { num:545, text:"The court must carry out the death penalty of stoning.",                                                           ref:"Deuteronomy 22:24" },
+    { num:546, text:"The court must carry out the death penalty of burning.",                                                           ref:"Leviticus 20:14" },
+    { num:547, text:"The court must carry out the death penalty of the sword.",                                                         ref:"Exodus 21:20" },
+    { num:548, text:"The court must carry out the death penalty of strangulation.",                                                     ref:"Leviticus 20:10" },
+    { num:549, text:"The court must hang those stoned for blasphemy or idolatry.",                                                      ref:"Deuteronomy 21:22" },
+    { num:550, text:"Bury the executed on the day they were killed.",                                                                   ref:"Deuteronomy 21:23" },
+    { num:551, text:"Not to delay the burial overnight.",                                                                               ref:"Deuteronomy 21:23" },
+    { num:552, text:"The court must not let the sorcerer live.",                                                                        ref:"Exodus 22:17" },
+    { num:553, text:"The court must flog the wrongdoer.",                                                                               ref:"Deuteronomy 25:2" },
+    { num:554, text:"The court must not exceed the prescribed number of lashes.",                                                       ref:"Deuteronomy 25:3" },
+    { num:555, text:"The court must not kill anybody on circumstantial evidence.",                                                       ref:"Exodus 23:7" },
+    { num:556, text:"The court must not punish anybody who was forced to commit a crime.",                                             ref:"Deuteronomy 22:26" },
+    { num:557, text:"The judge must not pity the murderer or assaulter at the trial.",                                                  ref:"Deuteronomy 19:13" },
+    { num:558, text:"The judge must not have mercy on the poor man at the trial.",                                                      ref:"Leviticus 19:15" },
+    { num:559, text:"The judge must not respect the great man at the trial.",                                                           ref:"Leviticus 19:15" },
+    { num:560, text:"The judge must not decide unjustly the case of the habitual transgressor.",                                       ref:"Exodus 23:6" },
+    { num:561, text:"The judge must not pervert justice.",                                                                              ref:"Leviticus 19:15" },
+    { num:562, text:"The judge must not pervert a case involving a convert or an orphan.",                                             ref:"Deuteronomy 24:17" },
+    { num:563, text:"Judge righteously.",                                                                                               ref:"Leviticus 19:15" },
+    { num:564, text:"The judge must not fear a violent man in judgment.",                                                               ref:"Deuteronomy 1:17" },
+    { num:565, text:"Judges must not accept bribes.",                                                                                   ref:"Exodus 23:8" },
+    { num:566, text:"Judges must not accept testimony unless both parties are present.",                                                ref:"Exodus 23:1" },
+    { num:567, text:"Not to curse judges.",                                                                                             ref:"Exodus 22:27" },
+    { num:568, text:"Not to curse the head of state.",                                                                                  ref:"Exodus 22:27" },
+    { num:569, text:"Not to curse a deaf person.",                                                                                      ref:"Leviticus 19:14" },
+    { num:570, text:"Anyone who knows evidence must testify at a trial.",                                                               ref:"Leviticus 5:1" },
+    { num:571, text:"Carefully interrogate the witness.",                                                                               ref:"Deuteronomy 13:15" },
+    { num:572, text:"A witness must not serve as a judge in capital crimes.",                                                           ref:"Numbers 35:30" },
+    { num:573, text:"Not to accept testimony from a lone witness.",                                                                     ref:"Deuteronomy 19:15" },
+    { num:574, text:"Transgressors must not testify.",                                                                                  ref:"Exodus 23:1" },
+    { num:575, text:"The litigant's relatives cannot testify.",                                                                         ref:"Deuteronomy 24:16" },
+    { num:576, text:"Not to testify falsely.",                                                                                          ref:"Exodus 20:13" },
+    { num:577, text:"Do to the false witness what he tried to do to the defendant.",                                                    ref:"Deuteronomy 19:19" },
+    { num:578, text:"Act according to the rulings of the high court.",                                                                  ref:"Deuteronomy 17:11" },
+    { num:579, text:"Not to deviate from a legal discussion.",                                                                          ref:"Deuteronomy 17:11" },
+    { num:580, text:"Not to add to the Torah commandments or their oral explanations.",                                                 ref:"Deuteronomy 13:1" },
+    { num:581, text:"Not to diminish any commandments from the Torah, in whole or in part.",                                           ref:"Deuteronomy 13:1" },
+    { num:582, text:"Not to curse your father and mother.",                                                                             ref:"Exodus 21:17" },
+    { num:583, text:"Not to strike your father and mother.",                                                                            ref:"Exodus 21:15" },
+    { num:584, text:"Respect your father and mother.",                                                                                  ref:"Exodus 20:12" },
+    { num:585, text:"Fear your father and mother.",                                                                                     ref:"Leviticus 19:3" },
+    { num:586, text:"Not to behave like the rebellious son as described in the Torah.",                                                 ref:"Deuteronomy 21:20" },
+    { num:587, text:"Mourn for relatives—even priests.",                                                                                ref:"Leviticus 10:19" },
+    { num:588, text:"The High Priest must not defile himself for any relatives.",                                                       ref:"Leviticus 21:11" },
+    { num:589, text:"The High Priest must not enter under the same roof as a corpse.",                                                  ref:"Leviticus 21:11" },
+    { num:590, text:"A priest must not defile himself for anyone other than his relatives.",                                           ref:"Leviticus 21:1" },
+    { num:591, text:"Appoint a king from Israel.",                                                                                      ref:"Deuteronomy 17:15" },
+    { num:592, text:"Not to appoint a convert.",                                                                                        ref:"Deuteronomy 17:15" },
+    { num:593, text:"The king must not have too many wives.",                                                                           ref:"Deuteronomy 17:17" },
+    { num:594, text:"The king must not have too many horses.",                                                                          ref:"Deuteronomy 17:16" },
+    { num:595, text:"The king must not have too much silver and gold.",                                                                 ref:"Deuteronomy 17:17" },
+    { num:596, text:"Destroy the seven Canaanite nations.",                                                                             ref:"Deuteronomy 20:17" },
+    { num:597, text:"Not to let any of them remain alive.",                                                                             ref:"Deuteronomy 20:16" },
+    { num:598, text:"Blot out the memory of Amalek.",                                                                                   ref:"Deuteronomy 25:19" },
+    { num:599, text:"Remember what Amalek did to the Jewish people.",                                                                   ref:"Deuteronomy 25:17" },
+    { num:600, text:"Not to forget their atrocities and ambush on our journey from Egypt in the desert.",                             ref:"Deuteronomy 25:19" },
+    { num:601, text:"Not to dwell permanently in Egypt.",                                                                               ref:"Deuteronomy 17:16" },
+    { num:602, text:"Offer peace terms to the residents of a city under siege and treat them according to the Torah if they accept surrender terms.", ref:"Deuteronomy 20:10" },
+    { num:603, text:"Not to offer peace to Ammon and Moab while besieging them.",                                                       ref:"Deuteronomy 23:7" },
+    { num:604, text:"Not to destroy fruit trees even during a siege.",                                                                  ref:"Deuteronomy 20:19" },
+    { num:605, text:"Prepare latrines outside the camps.",                                                                              ref:"Deuteronomy 23:13" },
+    { num:606, text:"Prepare a shovel for each soldier to dig with.",                                                                   ref:"Deuteronomy 23:14" },
+    { num:607, text:"Appoint a priest to speak to the soldiers during war.",                                                            ref:"Deuteronomy 20:2" },
+    { num:608, text:"A newly married man who has built a home or planted a vineyard is exempt from the military to rejoice with his wife.", ref:"Deuteronomy 24:5" },
+    { num:609, text:"Not to conscript or involve the newly married man in military or communal service.",                              ref:"Deuteronomy 24:5" },
+    { num:610, text:"Not to panic and retreat during battle.",                                                                          ref:"Deuteronomy 20:3" },
+    { num:611, text:"Carry out the laws of captive women.",                                                                             ref:"Deuteronomy 21:11" },
+    { num:612, text:"Not to sell her into slavery.",                                                                                    ref:"Deuteronomy 21:14" },
+    { num:613, text:"Not to retain her for servitude after having relations with her.",                                                 ref:"Deuteronomy 21:14" }
+  ];
+
+  // ── State ───────────────────────────────────────────────────
+  let currentMatches = [];
+  let currentRegex = null;
+
+  // ── Helpers ─────────────────────────────────────────────────
+  function buildRegex(term, wholeWord, caseSensitive) {
+    let escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    if (wholeWord) escaped = `\\b${escaped}\\b`;
+    return new RegExp(escaped, caseSensitive ? 'g' : 'gi');
+  }
+
+  function highlight(text, regex) {
+    if (!regex) return text;
+    return text.replace(regex, m => `<mark>${m}</mark>`);
+  }
+
+  // ── Render ──────────────────────────────────────────────────
+  function render(matches, regex) {
+    const resultsEl = document.getElementById('results');
+    const statusEl  = document.getElementById('status');
+    resultsEl.innerHTML = '';
+
+    if (matches.length === 0) {
+      statusEl.textContent = 'No commands matched your search.';
+      resultsEl.innerHTML = '<div class="state-msg">Try different words or click Show All.</div>';
+      return;
+    }
+
+    const total = matches.length;
+    const showing = total === 613 ? `Showing all 613 commands` : `${total} command${total !== 1 ? 's' : ''} found`;
+    statusEl.textContent = showing;
+
+    matches.forEach(cmd => {
+      const div = document.createElement('div');
+      div.className = 'result-item';
+      div.innerHTML = `
+        <div class="result-number">Command ${cmd.num}</div>
+        <div class="result-text">${highlight(cmd.text, regex)}</div>
+        <div class="result-ref">(${cmd.ref})</div>`;
+      resultsEl.appendChild(div);
+    });
+  }
+
+  // ── Search ──────────────────────────────────────────────────
+  function doSearch() {
+    const term          = document.getElementById('searchInput').value.trim();
+    const wholeWord     = document.getElementById('wholeWord').checked;
+    const caseSensitive = document.getElementById('caseSensitive').checked;
+
+    if (!term) { showAll(); return; }
+
+    let regex;
+    try { regex = buildRegex(term, wholeWord, caseSensitive); }
+    catch(e) { document.getElementById('status').textContent = 'Invalid search term.'; return; }
+
+    currentRegex   = regex;
+    currentMatches = COMMANDS.filter(cmd => { regex.lastIndex = 0; return regex.test(cmd.text); });
+    render(currentMatches, currentRegex);
+  }
+
+  function showAll() {
+    document.getElementById('searchInput').value = '';
+    currentRegex   = null;
+    currentMatches = COMMANDS.slice();
+    render(currentMatches, currentRegex);
+  }
+
+  // ── Events ──────────────────────────────────────────────────
+  document.getElementById('searchBtn').addEventListener('click', doSearch);
+  document.getElementById('clearBtn').addEventListener('click', showAll);
+  document.getElementById('searchInput').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+
+  // Show all on load
+  showAll();
+
+})();
+</script>
+</body>
+</html>
